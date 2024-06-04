@@ -841,7 +841,7 @@ def api():
             #pc4=(json['Record'][9][3])
             #t4=(json['Record'][10][3])
 
-            refugo_maq1=(json['Record'][9][3])
+            parada1=(json['Record'][9][3])
 
             tempo1= tm - int(t1/1000)
             tempo2= tm - int(t2/1000)
@@ -864,11 +864,12 @@ def api():
                                     where estado=TRUE and id_maquina =1;")
                 print('Adicionada parada Automatica ')
 
-            elif(refugo_maq1 == 1):
+            elif(parada1 == 1):
                 
-                databaseOBJ.writeRaw("  insert into refugo(id_producao, id_motivo, quantidade, id_usuario, id_maquina, id_componente, justificativa, data) \
-                                    select id, '" + 8 + "', '" + 1 + "', '" + userid + "', id_maquina, '" + id_componente + "' , '" + justificativa + "' ,  '" + dtstring + "' from producao \
-                                    where estado=TRUE and id_maquina ='" + id_maquina + "';")
+                databaseOBJ.writeRaw("update parada SET (estado, fim_parada, justificativa, tempo) = \
+                                        (FALSE, '" + dtstring + "','Parada Automatica', ('" + dtstring + "' - inicio_parada)) from \
+                                        (select id from parada where id_maquina= 1 order by id DESC limit 1) as subquery\
+                                        where parada.id=subquery.id and estado=TRUE")
             
                 print('Retomada Produção ')
 
