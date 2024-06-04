@@ -1,0 +1,141 @@
+                        <div class="col-12 col-lg-6 px-1 py-1">
+                            <div class="card text-black o-hidden bg-light border-info text-center h-100">
+                                <div class="card-body">
+                                    <div class="row justify-content-center">
+                                        <h5 class="card-title">Primeiro Turno</h5>
+                                    </div>
+                                    <div class="row justify-content-center">
+                                        <table class="table-sm table-striped" style="width: 100%;">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Inicio</th>
+                                                <th scope="col">Fim</th>
+                                                <th scope="col">Quantidade</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <th scope="row">06:05</th>
+                                                <th scope="row">07:00</th>
+                                                <td id="qt1-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">07:00</th>
+                                                <th scope="row">08:00</th>
+                                                <td id="qt2-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">08:00</th>
+                                                <th scope="row">09:00</th>
+                                                <td id="qt3-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">09:00</th>
+                                                <th scope="row">10:00</th>
+                                                <td id="qt4-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">10:00</th>
+                                                <th scope="row">11:00</th>
+                                                <td id="qt5-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">11:00</th>
+                                                <th scope="row">12:00</th>
+                                                <td id="qt6-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">12:00</th>
+                                                <th scope="row">13:00</th>
+                                                <td id="qt7-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">13:00</th>
+                                                <th scope="row">14:00</th>
+                                                <td id="qt8-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">14:00</th>
+                                                <th scope="row">15:00</th>
+                                                <td id="qt9-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">15:00</th>
+                                                <th scope="row">15:48</th>
+                                                <td id="qt10-3"></td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                    </div> 
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 px-1 py-1">
+                            <div class="card text-black o-hidden bg-light border-info text-center h-100">
+                                <div class="card-body">
+                                    <div class="row justify-content-center">
+                                        <h5 class="card-title">Segundo Turno</h5>
+                                    </div>
+                                    <div class="row justify-content-center">
+                                        <table class="table-sm table-striped" style="width: 100%;">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Inicio</th>
+                                                <th scope="col">Fim</th>
+                                                <th scope="col">Quantidade</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <th scope="row">18:30</th>
+                                                <th scope="row">19:00</th>
+                                                <td id="qt11-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">19:00</th>
+                                                <th scope="row">20:00</th>
+                                                <td id="qt12-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">20:00</th>
+                                                <th scope="row">21:00</th>
+                                                <td id="qt13-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">22:00</th>
+                                                <th scope="row">23:00</th>
+                                                <td id="qt14-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">23:00</th>
+                                                <th scope="row">00:00</th>
+                                                <td id="qt15-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">00:00</th>
+                                                <th scope="row">01:00</th>
+                                                <td id="qt16-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">01:00</th>
+                                                <th scope="row">02:00</th>
+                                                <td id="qt17-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">02:00</th>
+                                                <th scope="row">03:00</th>
+                                                <td id="qt18-3"></td>
+                                              </tr>
+                                              <tr>
+                                                <th scope="row">03:00</th>
+                                                <th scope="row">03:42</th>
+                                                <td id="qt19-3"></td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                    </div> 
+
+                                </div>
+                            </div>
+                        </div>

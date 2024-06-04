@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid h-100">
+    <div class="row justify-content-center text-black">
+        <div class="col-12 col-lg-4"></div>
+        <div class="col-12 col-lg-4 d-flex align-items-center justify-content-lg-center justify-content-start"><h4>Gráficos</h4></div>
+        <div class="col-12 col-lg-4 d-flex align-items-center justify-content-end"></div>
+    </div>
+
+    <div class="row justify-content-center text-black">
+        <div class="col-12 col-lg-9 px-1 py-1">
+            <div class="card text-black o-hidden bg-light mb-3 text-center align-items-center">
+                <h4 class="card-title text-black">Evolução - {{nomemaq[0][1]}}</h4>
+                <div class="card-body">
+                    <canvas class="canvasChart" id="evo-1" height="200"></canvas>           
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3 px-1 py-1">
+            <div class="card text-black o-hidden bg-light mb-3 text-center align-items-center">
+                <h4 class="card-title text-black">Global - {{nomemaq[0][1]}}</h4>
+                <div class="card-body">
+                    <canvas class="canvasChart" id="global-1" height="200"></canvas>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center text-black">
+        <div class="col-12 col-lg-3 px-1 py-1">
+            <div class="card text-black o-hidden h-100 border-info" style="visibility:hidden">
+                <div class="card-header d-flex align-items-center">
+                    <span class="h3 mr-auto"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center text-black">
+        <div class="col-6 col-lg-4 d-flex align-items-center justify-content-lg-center justify-content-start"><h5>Valores de Referência Classe Mundial:</h5></div>
+        <div class="col-6 col-lg-4 d-flex align-items-center justify-content-lg-center justify-content-start"><h6>
+            <p>Disponibilidade maior ou igual 90%.</p>
+            <p>Performance  maior ou igual 95%.</p>
+            <p>Qualidade maior ou igual à 99,9%.</p></h6>
+        </div>
+    </div>
+</div>
+
+<script>
+
+var options1 = {
+    maintainAspectRatio: false,
+    responsive: true,
+    legend:{
+    labels: {
+            fontColor: "black",
+            fontSize: 12,
+            boxWidth: 12,
+            padding: 10,
+        },
+        position:'top',
+        aling:'start'
+    },
+    scales: {
+      xAxes: [{
+        ticks: {
+            fontColor: "black"
+          },
+        gridLines:{
+            color:"black"
+         }
+      }],
+      yAxes: [{
+         ticks: {
+            fontColor: "black",
+            max: 100,
+            min: 0,
+            stepSize:20
+         },
+      }],
+    }
+};
+
+var disparray1 = {{disponi1 | safe}};
+var perfarray1 = {{perfor1 | safe}};
+var qualarray1 = {{quali1 | safe}};
+var dtoeearray1 = {{dtop1 | safe}};
+var m1oeearray1 = {{m1oee | safe}};
+
+let indicadores1 = document.getElementById('evo-1').getContext('2d');
+let chart1 = new Chart(indicadores1, {
+    type:'bar',
+    options:options1,
+
+    data: {
+        labels: dtoeearray1,
+        datasets: [
+            {
+                label: 'Disponibilidade',
+                data:disparray1,
+                trendlineLinear: {
+                                    style: "#FFFFF",
+                                    lineStyle: "dotted",
+                                    width: 2
+                                },
+                backgroundColor: "rgba(173, 200, 101, 0.7)",
+                borderColor: "rgba(173, 200, 101, 0.7)"
+
+            },
+            {
+                label: 'Performance',
+                data:perfarray1, 
+                backgroundColor: "rgba(137, 213, 201, 0.7)",
+                borderColor: "rgba(137, 213, 201, 0.7)"
+            },
+            {
+                label: 'Qualidade',
+                data:qualarray1 ,
+                backgroundColor: "rgba(63, 172, 23, 0.7)",
+                borderColor: "rgba(63, 172, 23, 0.7)"
+            },
+            {
+                label: 'Oee',
+                data:m1oeearray1 ,
+                backgroundColor: "rgba(255, 131, 87, 0.7)",
+                borderColor: "rgba(255, 131, 87, 0.7)"
+            },
+        ]
+    }
+});
+
+
+var options2 = {
+    maintainAspectRatio: false,
+    responsive: false,
+    legend:{
+    labels: {
+            fontColor: 'black',
+            fontSize: 12,
+            boxWidth: 12,
+            padding: 5,
+    		},
+        position:'left',
+        aling:'start',
+
+    },
+    scale: {
+        ticks: {
+            max: 100,
+            min: 0,
+            stepSize: 20,
+            showLabelBackdrop: false,
+            fontColor:'black',
+
+        },
+    },
+    layout: {
+        padding: {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
+        },
+    },
+};
+
+var data1 = {
+    datasets: [{
+        data: [
+            "{{mvalues1[0][0]}}",
+            "{{mvalues1[0][1]}}",
+            "{{mvalues1[0][2]}}",
+            "{{mvalues1[0][3]}}"
+            ],
+        backgroundColor: [
+            "rgba(173, 200, 101, 0.6)",
+            "rgba(137, 213, 201, 0.6)",
+            "rgba(63, 172, 23, 0.6)",
+            "rgba(255, 131, 87, 0.6)"],
+        borderColor: "rgba(0, 0, 0, 0.3)",
+        label: 'Valores médios'
+    }],
+    labels: [
+            "Disponibilidade",
+            "Performance",
+            "Qualidade",
+            "OEE"
+    ]
+};
+var ctx = $("#global-1");
+new Chart(ctx, {
+    data: data1,
+    type: 'polarArea',
+    options: options2
+});
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="container-fluid text-white">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-4"></div>
+        <div class="col-6 col-lg-4 d-flex align-items-center justify-content-lg-center justify-content-start"><h2>Cadastro de Moldes</h1></div>
+        <div class="col-6 col-lg-4 d-flex align-items-center justify-content-end">
+            <button type="button" class="btn btn-info mx-1" id="botao-adicionar"><i class="far fa-plus-square"></i></button>
+            <button type="button" class="btn btn-info mx-1 my-0" id="botao-editar"><i class="fas fa-edit"></i></button>          
+            <button type="button" class="btn btn-info mx-1 my-0 " id="botao-apagar"><i class="fas fa-trash"></i></button>
+        </div>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+        <div class="col-12 px-1 py-1">
+            <div class="card o-hidden h-100 bg-dark border-info align-items-center">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table text-white" id="tabela-moldes"><thead class="thead-default"></thead></table>
+                    </div>
+                </div>   
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="editar-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Molde Cadastrado</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editar-formulario">
+                    <div class="form-row d-flex justify-content-center text-center">
+                        <div class="col-12 p-2">
+                            <i class="fas fa-edit bigIcon my-2"></i>
+                            <input type="text" class="form-control my-2" id="editar-id" readonly>
+                            <input type="text" class="form-control my-2" id="editar-molde" placeholder="Molde">
+                            <input type="number" class="form-control my-2" id="editar-cavidade" placeholder="Cavidades">
+                            <button type='submit' class="btn btn-info my-2 w-100">Salvar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="adicionar-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cadastrar Molde</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="adicionar-formulario">
+                    <div class="form-row d-flex justify-content-center text-center">
+                        <div class="col-12 p-2">
+                            <i class="far fa-plus-square bigIcon my-2"></i>
+                            <input type="text" class="form-control my-2" id="adicionar-molde" placeholder="Molde" required>
+                            <input type="text" class="form-control my-2" id="adicionar-cavidade" placeholder="Cavidades" required>
+                            <button type='submit' class="btn btn-info my-2 w-100">Salvar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mensagem-apagar" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">Apagar molde ?<button class="btn btn-info my-2 w-100" id="botao-confirmacao">Confirmar</button></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var table;
+    /*Build moldes data table*/
+    jQuery.ajax({
+        url:'/moldes',
+        type: 'GET',
+        data: {},
+        success:  function(response){
+            /*Moldes table*/
+            table = jQuery('#tabela-moldes').DataTable(
+            {
+                language:{"url": "{{ url_for('static', filename='datatable-1.10.22/pt-br.json') }}"},
+                pageLength : 10,
+                bLengthChange: false,
+                bFilter: true,
+                data: response['data'],
+                columns: [{title: "N° registro"}, {title: "Molde"}, {title: "Cavidades"}]
+            });
+            /*Molde table row handler*/
+            jQuery('#tabela-moldes tbody').on('click', 'tr', function () 
+            {
+                var tr = jQuery(this).closest('tr');
+                var row = table.row(tr);
+                /*Check if row is empty*/
+                if (typeof row.data() === 'undefined'){return null;}
+                /*Selected row*/
+                if (jQuery(this).hasClass('tableSelected')){
+                    jQuery(this).removeClass('tableSelected');
+                }
+                else {
+                    table.$('tr.tableSelected').removeClass('tableSelected');
+                    jQuery(this).addClass('tableSelected');
+                }    
+
+            });
+        }
+    });
+
+    /*New molde*/
+    jQuery('#botao-adicionar').on('click', function(e){
+        jQuery('#adicionar-modal').modal('show');
+    });
+    jQuery('#adicionar-formulario').on('submit', function(e){
+        e.preventDefault();
+        jQuery.ajax({
+            url: '/moldes',
+            type: 'POST',
+            data: {'molde': jQuery('#adicionar-molde').val(), 'cavidade': jQuery('#adicionar-cavidade').val()}, 
+            success: function(response){
+                jQuery('#adicionar-modal').modal('hide');
+                jQuery('#message').modal('show');
+                jQuery('#messageText').text('Entrada adicionada com sucesso');
+                setTimeout(function(){
+                    jQuery('#message').modal('hide');
+                    location.reload();  
+                }, 1500);  
+            }
+        });
+
+    });
+
+    /*Edit molde*/
+    jQuery('#botao-editar').on('click', function(e){
+        var selectedRow = table.row('.tableSelected');
+        if(selectedRow[0].length == 0){
+            jQuery('#message').modal('show');
+            jQuery('#messageText').text('Entrada não selecionada');
+            setTimeout(function(){ 
+                jQuery('#message').modal('hide'); 
+            }, 1500);  
+            return null;
+        };
+        /*Restore selected user data*/
+        jQuery('#editar-id').val(selectedRow.data()[0]);
+        jQuery('#editar-molde').val(selectedRow.data()[1]);
+        jQuery('#editar-cavidade').val(selectedRow.data()[2]);
+        /*Show edit user modal*/
+        jQuery('#editar-modal').modal('show');
+    });
+    jQuery('#editar-formulario').on('submit', function(e){
+        jQuery('#editar-modal').modal('hide');
+        e.preventDefault();
+        jQuery.ajax({
+            url: '/moldes',
+            type: 'PUT',
+            data: {'id': jQuery('#editar-id').val(), 'molde': jQuery('#editar-molde').val(), 'cavidade': jQuery('#editar-cavidade').val() }, 
+            success: function(response){
+                jQuery('#message').modal('show');
+                jQuery('#messageText').text('Entrada modificada com sucesso');
+                setTimeout(function(){ 
+                    jQuery('#message').modal('hide'); 
+                    location.reload(); 
+                }, 1500);  
+            } 
+        });
+
+    });
+
+    /*Delete user*/ 
+    jQuery('#botao-apagar').on('click', function(e){
+        var selectedRow = table.row('.tableSelected');
+        if(selectedRow[0].length == 0){
+            jQuery('#message').modal('show');
+            jQuery('#messageText').text('Entrada não selecionada');
+            setTimeout(function(){ 
+                jQuery('#message').modal('hide'); 
+            }, 1500);  
+            return null;
+        };
+        jQuery('#mensagem-apagar').modal('show');
+    });
+    jQuery('#botao-confirmacao').on('click', function(e){
+        jQuery('#mensagem-apagar').modal('hide');
+        var selectedRow = table.row('.tableSelected');
+        jQuery.ajax({
+            url: '/moldes',
+            type: 'DELETE',
+            data: {'id': selectedRow.data()[0]},
+            success: function(response){
+                jQuery('#message').modal('show');
+                jQuery('#messageText').text('Entrada removida com sucesso');
+                setTimeout(function(){ 
+                    jQuery('#message').modal('hide'); 
+                }, 1500);  
+                selectedRow.remove().draw();
+            }
+        });
+    });
+
+</script>
+
+{% endblock %}
