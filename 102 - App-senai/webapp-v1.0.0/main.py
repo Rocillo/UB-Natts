@@ -4,8 +4,8 @@ import flask
 import bcrypt
 import database
 import flask_login
-from datetime import datetime, timedelta
-from flask import request
+from datetime import datetime, time, timedelta
+from flask import jsonify, request
 
 from datetime import datetime
 
@@ -893,6 +893,40 @@ def api():
     else:
         flask.abort(405)
 
+
+# Dictionary to store the start and stop times
+timer_data = {
+    "start_time": None,
+    "elapsed_time": timedelta()
+}
+
+@app.route('/start_timer', methods=['POST'])
+def start_timer():
+    if timer_data['start_time'] is not None:
+        return jsonify({"message": "Timer is already running."}), 400
+
+    timer_data['start_time'] = datetime.now()
+    return jsonify({"message": "Timer started."})
+
+@app.route('/stop_timer', methods=['POST'])
+def stop_timer():
+    if timer_data['start_time'] is None:
+        return jsonify({"message": "Timer is not running."}), 400
+
+    elapsed_time = datetime.now() - timer_data['start_time']
+    timer_data['elapsed_time'] += elapsed_time
+    timer_data['start_time'] = None
+    return jsonify({"message": "Timer stopped.", "elapsed_time": timer_data['elapsed_time'].total_seconds()})
+
+@app.route('/check_timer', methods=['GET'])
+def check_timer():
+    if timer_data['start_time'] is None:
+        return jsonify({"elapsed_time": timer_data['elapsed_time'].total_seconds()})
+
+    current_time = datetime.now()
+    elapsed_time = current_time - timer_data['start_time'] + timer_data['elapsed_time']
+    return jsonify({"elapsed_time": elapsed_time.total_seconds()})
+
 ######################################################## VIEWS ########################################################
 @app.route('/autenticacao', methods=['GET'])
 def autenticacao():
@@ -1022,3 +1056,8 @@ def historico():
     machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
     return flask.render_template('historico.html', machine_names=machine_names)
 
+@app.route('/index')
+@flask_login.login_required
+def index():
+    machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
+    return flask.render_template('index.html', machine_names=machine_names)

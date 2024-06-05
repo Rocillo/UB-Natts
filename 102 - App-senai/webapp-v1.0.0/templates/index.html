@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Time Tracker</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Time Tracker</h1>
+    <button id="startButton">Start Timer</button>
+    <button id="stopButton">Stop Timer</button>
+    <div id="message"></div>
+    <div id="elapsedTime"></div>
+
+    <script>
+        $(document).ready(function() {
+            $("#startButton").click(function() {
+                $.ajax({
+                    type: "POST",
+                    url: "/start_timer",
+                    success: function(response) {
+                        $("#message").text(response.message);
+                        $("#elapsedTime").text("");
+                    },
+                    error: function(response) {
+                        $("#message").text(response.responseJSON.message);
+                    }
+                });
+            });
+
+            $("#stopButton").click(function() {
+                $.ajax({
+                    type: "POST",
+                    url: "/stop_timer",
+                    success: function(response) {
+                        $("#message").text(response.message);
+                        $("#elapsedTime").text("Elapsed Time: " + response.elapsed_time + " seconds");
+                    },
+                    error: function(response) {
+                        $("#message").text(response.responseJSON.message);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
