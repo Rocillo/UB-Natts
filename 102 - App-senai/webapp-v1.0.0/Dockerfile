@@ -15,7 +15,7 @@ RUN apk add --virtual .build-dependencies \
             pcre-dev \
             gcc \
             postgresql-dev \
-	    libffi-dev
+	        libffi-dev
 RUN apk add --no-cache pcre
 WORKDIR /app
 COPY ./ /app
