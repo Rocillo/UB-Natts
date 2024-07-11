@@ -103,3 +103,12 @@ select.form-control {-moz-appearance: none;-webkit-appearance: none;appearance: 
     font-weight: bold;
 }
 
+.card-active {
+    border: 2px solid green;
+    box-shadow: 0 0 10px green;
+}
+
+.card-inactive {
+    border: 2px solid red;
+    box-shadow: 0 0 10px red;
+}
