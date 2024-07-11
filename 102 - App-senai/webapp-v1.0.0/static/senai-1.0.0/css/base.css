@@ -1,50 +1,123 @@
+html {
+    height: 100%;
+}
 
-html{height: 100%;}
 .container-fluid {
     background-size: 100% 100%;
     background-attachment: fixed;
 }
-body{background-color: #F1F1F1; height: 100%;}
-.navbar{background-color: #bfe7f1; margin-bottom:2px; border-color: #043573;}
-.navbar-light .navbar-nav .nav-link{color: black;}
-.card-body {width: 100% }
-.card-header {background-color: #73040421;}
-.canvasChart{max-width: 100%;}
-.canvasRing{max-width: 100%;}
-.tableSelected{background-color: #FFD480; color:black;}
-.bigIcon{font-size: 120px;color: #043573}
-.formErrorMsg{font-size: 10px; color: red;}
-.bigInput{resize: none;}
-.indicator-square{max-width: 100%; 
-    max-height: 100%; 
+
+body {
+    background-color: #F1F1F1;
+    height: 100%;
+}
+
+.navbar {
+    background-color: #bfe7f1;
+    margin-bottom: 2px;
+    border-color: #043573;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: black;
+}
+
+.card-body {
+    width: 100%
+}
+
+.card-header {
+    background-color: #73040421;
+}
+
+.canvasChart {
+    max-width: 100%;
+}
+
+.canvasRing {
+    max-width: 100%;
+}
+
+.tableSelected {
+    background-color: #FFD480;
+    color: black;
+}
+
+.bigIcon {
+    font-size: 120px;
+    color: #043573
+}
+
+.formErrorMsg {
+    font-size: 10px;
+    color: red;
+}
+
+.bigInput {
+    resize: none;
+}
+
+.indicator-square {
+    max-width: 100%;
+    max-height: 100%;
     background-color: white;
-    border-radius: 15%; 
-    width: 50px; 
-    height: 25px; 
-    border-color: blanchedalmond;}
-.carousel-indicators li {width: 100px;height: 10px;border-radius: 10%;}
-.carousel-indicators {bottom: -50px;}
+    border-radius: 15%;
+    width: 50px;
+    height: 25px;
+    border-color: blanchedalmond;
+}
+
+.carousel-indicators li {
+    width: 100px;
+    height: 10px;
+    border-radius: 10%;
+}
+
+.carousel-indicators {
+    bottom: -50px;
+}
+
 .carousel-control-prev,
-.carousel-control-next {height: 300px; width: 20px;}
-select.form-control {-moz-appearance: none;-webkit-appearance: none;appearance: none;}
+.carousel-control-next {
+    height: 300px;
+    width: 20px;
+}
+
+select.form-control {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
 @keyframes fa-blink {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
+
 .fa-blink {
-  -webkit-animation: fa-blink .75s linear infinite;
-  -moz-animation: fa-blink .75s linear infinite;
-  -ms-animation: fa-blink .75s linear infinite;
-  -o-animation: fa-blink .75s linear infinite;
-  animation: fa-blink 1.0s linear infinite;
+    -webkit-animation: fa-blink .75s linear infinite;
+    -moz-animation: fa-blink .75s linear infinite;
+    -ms-animation: fa-blink .75s linear infinite;
+    -o-animation: fa-blink .75s linear infinite;
+    animation: fa-blink 1.0s linear infinite;
 }
-#takt-1{
+
+#takt-1 {
     width: 100%;
     font-size: 18px;
     font-weight: bold;
 }
-#estado-setup-1{
+
+#estado-setup-1 {
     -webkit-animation: fa-blink .75s linear infinite;
     -moz-animation: fa-blink .75s linear infinite;
     -ms-animation: fa-blink .75s linear infinite;
@@ -55,12 +128,13 @@ select.form-control {-moz-appearance: none;-webkit-appearance: none;appearance: 
     font-weight: bold;
 }
 
-#takt-2{
+#takt-2 {
     width: 100%;
     font-size: 18px;
     font-weight: bold;
 }
-#estado-setup-2{
+
+#estado-setup-2 {
     -webkit-animation: fa-blink .75s linear infinite;
     -moz-animation: fa-blink .75s linear infinite;
     -ms-animation: fa-blink .75s linear infinite;
@@ -71,12 +145,13 @@ select.form-control {-moz-appearance: none;-webkit-appearance: none;appearance: 
     font-weight: bold;
 }
 
-#takt-3{
+#takt-3 {
     width: 100%;
     font-size: 18px;
     font-weight: bold;
 }
-#estado-setup-3{
+
+#estado-setup-3 {
     -webkit-animation: fa-blink .75s linear infinite;
     -moz-animation: fa-blink .75s linear infinite;
     -ms-animation: fa-blink .75s linear infinite;
@@ -87,12 +162,13 @@ select.form-control {-moz-appearance: none;-webkit-appearance: none;appearance: 
     font-weight: bold;
 }
 
-#takt{
+#takt {
     width: 100%;
     font-size: 18px;
     font-weight: bold;
 }
-#estado-setup{
+
+#estado-setup {
     -webkit-animation: fa-blink .75s linear infinite;
     -moz-animation: fa-blink .75s linear infinite;
     -ms-animation: fa-blink .75s linear infinite;
@@ -111,4 +187,26 @@ select.form-control {-moz-appearance: none;-webkit-appearance: none;appearance: 
 .card-inactive {
     border: 2px solid red;
     box-shadow: 0 0 10px red;
+}
+
+.fa-blink {
+    -webkit-animation: fa-blink .75s linear infinite;
+    -moz-animation: fa-blink .75s linear infinite;
+    -ms-animation: fa-blink .75s linear infinite;
+    -o-animation: fa-blink .75s linear infinite;
+    animation: fa-blink 1.0s linear infinite;
+}
+
+@keyframes fa-blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
