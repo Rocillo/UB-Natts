@@ -1,12 +1,18 @@
 from flask import Flask, jsonify, render_template
 import psycopg2
 from datetime import datetime
+import database
 
 app = Flask(__name__)
 
+#app.secret_key = os.environ['SECRETKEY']
+app.secret_key = 'key'
+#databaseOBJ=database.postgresDatabase(user=os.environ['DBUSER'], password=os.environ['DBPASSWORD'], host=os.environ['DBHOST'], dbname=os.environ['DBNAME'])
+databaseOBJ = database.postgresDatabase(host='localhost')
+
 # Database connection parameters
 DB_HOST = 'localhost'
-DB_NAME = 'teste-natts'
+DB_NAME = 'ub_natts'
 DB_USER = 'postgres'
 DB_PASSWORD = 'postgres'
 

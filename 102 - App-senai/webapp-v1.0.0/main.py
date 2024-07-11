@@ -4,9 +4,10 @@ import bcrypt
 import database
 import flask_login
 from datetime import datetime, time, timedelta
-from flask import jsonify, request
-
+from flask import jsonify, request, redirect, url_for
+import psycopg2
 from datetime import datetime
+
 
 ######################################################## INIT ########################################################
 
@@ -922,7 +923,6 @@ def monitoramento_geral():
 
     return flask.render_template('monitoramento_geral.html', machine_names=machine_names)
 
-
 @app.route('/cadastro_usuarios')
 @flask_login.login_required
 def cadastro_usuarios():
@@ -946,8 +946,199 @@ def historico():
     machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
     return flask.render_template('historico.html', machine_names=machine_names)
 
+# Database connection parameters
+DB_HOST = 'localhost'
+DB_NAME = 'ub_natts'
+DB_USER = 'postgres'
+DB_PASSWORD = 'postgres'
+
+# Connect to the PostgreSQL database
+def connect_db():
+    try:
+        conn = psycopg2.connect(
+            host=DB_HOST,
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD
+        )
+        return conn
+    except Exception as e:
+        print(f"Error connecting to database: {e}")
+        return None
+
+# Fetch workstation status
+def fetch_workstation_status():
+    conn = connect_db()
+    if not conn:
+        return []
+
+    cursor = conn.cursor()
+    try:
+        query = """
+        SELECT w.workstation_id, w.name AS workstation_name,
+               op.name AS operator_name, ws.start_time, ws.end_time,
+               CASE WHEN ws.end_time IS NULL THEN true ELSE false END AS active
+        FROM Workstations w
+        LEFT JOIN WorkSessions ws ON w.workstation_id = ws.workstation_id AND ws.is_done = FALSE
+        LEFT JOIN Operators op ON ws.operator_id = op.operator_id
+        WHERE ws.is_done = FALSE
+        ORDER BY w.workstation_id;
+        """
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        result = []
+        for row in rows:
+            result.append({
+                'workstation_id': row[0],
+                'workstation_name': row[1],
+                'operator_name': row[2] if row[2] else 'None',
+                'start_time': row[3].strftime('%Y-%m-%d %H:%M:%S') if row[3] else 'N/A',
+                'active': row[5]
+            })
+        return result
+    except Exception as e:
+        print(f"Error fetching workstation status: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+# Fetch all workstations
+def fetch_all_workstations():
+    conn = connect_db()
+    if not conn:
+        return []
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM Workstations")
+        workstations = cursor.fetchall()
+        return workstations
+    except Exception as e:
+        print(f"Error fetching workstations: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+# Fetch a single workstation by ID
+def fetch_workstation_by_id(workstation_id):
+    conn = connect_db()
+    if not conn:
+        return None
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT * FROM Workstations WHERE workstation_id = %s", (workstation_id,))
+        workstation = cursor.fetchone()
+        return workstation
+    except Exception as e:
+        print(f"Error fetching workstation: {e}")
+        return None
+    finally:
+        cursor.close()
+        conn.close()
+
+# Add a new workstation
+def add_workstation(name, location):
+    conn = connect_db()
+    if not conn:
+        return False
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO Workstations (name, location) VALUES (%s, %s)", (name, location))
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        print(f"Error adding workstation: {e}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+# Update a workstation
+def update_workstation(workstation_id, name, location):
+    conn = connect_db()
+    if not conn:
+        return False
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute("UPDATE Workstations SET name = %s, location = %s WHERE workstation_id = %s", (name, location, workstation_id))
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        print(f"Error updating workstation: {e}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+# Delete a workstation
+def delete_workstation(workstation_id):
+    conn = connect_db()
+    if not conn:
+        return False
+    
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM Workstations WHERE workstation_id = %s", (workstation_id,))
+        conn.commit()
+        return True
+    except Exception as e:
+        conn.rollback()
+        print(f"Error deleting workstation: {e}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/add_workstation', methods=['POST'])
+def add_workstation_route():
+    name = request.form['name']
+    location = request.form['location']
+    if add_workstation(name, location):
+        return redirect(url_for('manage_workstations'))
+    else:
+        return "Error adding workstation", 500
+
+@app.route('/update_workstation', methods=['POST'])
+def update_workstation_route():
+    workstation_id = request.form['workstation_id']
+    name = request.form['name']
+    location = request.form['location']
+    if update_workstation(workstation_id, name, location):
+        return redirect(url_for('manage_workstations'))
+    else:
+        return "Error updating workstation", 500
+
+@app.route('/delete_workstation', methods=['POST'])
+def delete_workstation_route():
+    workstation_id = request.form['workstation_id']
+    if delete_workstation(workstation_id):
+        return redirect(url_for('manage_workstations'))
+    else:
+        return "Error deleting workstation", 500
+
+@app.route('/status')
+@flask_login.login_required
+def status():
+    status = fetch_workstation_status()
+    return jsonify(status)
+
 @app.route('/index')
 @flask_login.login_required
 def index():
     machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
+
     return flask.render_template('index.html', machine_names=machine_names)
+
+@app.route('/manage_workstations')
+@flask_login.login_required
+def manage_workstations():
+    machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
+    workstations = fetch_all_workstations()
+    return flask.render_template('manage_workstations.html', workstations=workstations, machine_names=machine_names)

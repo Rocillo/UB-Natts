@@ -5,7 +5,7 @@ import threading
 
 # Database connection parameters
 DB_HOST = 'localhost'
-DB_NAME = 'teste-natts'
+DB_NAME = 'ub_natts'
 DB_USER = 'postgres'
 DB_PASSWORD = 'postgres'
 

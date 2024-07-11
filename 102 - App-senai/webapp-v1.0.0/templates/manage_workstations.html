@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex align-items-center justify-content-center">
+        <h1 class="my-4">Gerenciar Workstations</h1>
+    </div>
+
+    <form action="/add_workstation" method="POST" class="mb-4">
+        <div class="form-group">
+            <label for="name">Nova Workstation:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="location">Localização:</label>
+            <input type="text" class="form-control" id="location" name="location" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Adicionar Workstation</button>
+    </form>
+
+    <h2>Existing Workstations</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Localização</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for workstation in workstations %}
+            <tr>
+                <td>{{ workstation[0] }}</td>
+                <td>{{ workstation[1] }}</td>
+                <td>{{ workstation[2] }}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal"
+                        data-id="{{ workstation[0] }}" data-name="{{ workstation[1] }}"
+                        data-location="{{ workstation[2] }}">Editar</button>
+                    <form action="/delete_workstation" method="POST" class="d-inline">
+                        <input type="hidden" name="workstation_id" value="{{ workstation[0] }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/update_workstation" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Editar Workstation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit-workstation-id" name="workstation_id">
+                    <div class="form-group">
+                        <label for="edit-name">Nome:</label>
+                        <input type="text" class="form-control" id="edit-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-location">Localização:</label>
+                        <input type="text" class="form-control" id="edit-location" name="location" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Mudanças</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#editModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var id = button.data('id')
+        var name = button.data('name')
+        var location = button.data('location')
+
+        var modal = $(this)
+        modal.find('.modal-body #edit-workstation-id').val(id)
+        modal.find('.modal-body #edit-name').val(name)
+        modal.find('.modal-body #edit-location').val(location)
+    })
+</script>
+{% endblock %}
