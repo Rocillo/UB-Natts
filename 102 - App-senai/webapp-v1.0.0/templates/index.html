@@ -2,45 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Time Tracker</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workstation Status</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card-active {
+            border: 2px solid green;
+            box-shadow: 0 0 10px green;
+        }
+        .card-inactive {
+            border: 2px solid red;
+            box-shadow: 0 0 10px red;
+        }
+    </style>
 </head>
 <body>
-    <h1>Time Tracker</h1>
-    <button id="startButton">Start Timer</button>
-    <button id="stopButton">Stop Timer</button>
-    <div id="message"></div>
-    <div id="elapsedTime"></div>
+    <div class="container">
+        <h1 class="my-4">Workstation Status</h1>
+        <div class="row" id="workstation-cards">
+            <!-- Workstation cards will be injected here by JavaScript -->
+        </div>
+    </div>
 
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $("#startButton").click(function() {
-                $.ajax({
-                    type: "POST",
-                    url: "/start_timer",
-                    success: function(response) {
-                        $("#message").text(response.message);
-                        $("#elapsedTime").text("");
-                    },
-                    error: function(response) {
-                        $("#message").text(response.responseJSON.message);
-                    }
+        function fetchStatus() {
+            $.getJSON('/status', function(data) {
+                let cardsHtml = '';
+                data.forEach(function(ws) {
+                    const cardClass = ws.active ? 'card-active' : 'card-inactive';
+                    cardsHtml += `
+                        <div class="col-md-6">
+                            <div class="card ${cardClass} mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">${ws.workstation_name}</h5>
+                                    <p class="card-text">Operator: ${ws.operator_name}</p>
+                                    <p class="card-text">Start Time: ${ws.start_time}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 });
+                $('#workstation-cards').html(cardsHtml);
             });
+        }
 
-            $("#stopButton").click(function() {
-                $.ajax({
-                    type: "POST",
-                    url: "/stop_timer",
-                    success: function(response) {
-                        $("#message").text(response.message);
-                        $("#elapsedTime").text("Elapsed Time: " + response.elapsed_time + " seconds");
-                    },
-                    error: function(response) {
-                        $("#message").text(response.responseJSON.message);
-                    }
-                });
-            });
+        $(document).ready(function() {
+            fetchStatus();
+            setInterval(fetchStatus, 5000);  // Refresh every 5 seconds
         });
     </script>
 </body>
