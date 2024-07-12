@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container h-100">
+    <div class="d-flex card-header align-items-center justify-content-center">
+        <h4 class="my-4">Gerenciar Operadores</h4>
+    </div>
+    <div class="card text-black o-hidden px-2 my-2 bg-light border-info">
+        <form action="/add_operator" method="POST" class="mb-4">
+            <div class="form-group">
+                <label for="name">Novo Operador:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="employee_number">Número do Cartão:</label>
+                <input type="text" class="form-control" id="employee_number" name="employee_number" required>
+            </div>
+            <div class="d-flex align-items-center justify-content-center">
+                <button type="submit" class="btn btn-primary align-items-center justify-content-center">Adicionar Operador</button>
+            </div>
+        </form>
+    </div>
+    <div class="d-flex align-items-center justify-content-center">
+        <h4 class="my-4">Operadores:</h4>
+    </div>
+    <div class="card text-black o-hidden px-2 py-2 bg-light border-info">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Número do Cartão</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for operator in operators %}
+                <tr>
+                    <td>{{ operator[0] }}</td>
+                    <td>{{ operator[1] }}</td>
+                    <td>{{ operator[2] }}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" data-id="{{ operator[0] }}" data-name="{{ operator[1] }}" data-employee_number="{{ operator[2] }}">Editar</button>
+                        <form action="/delete_operator" method="POST" class="d-inline">
+                            <input type="hidden" name="operator_id" value="{{ operator[0] }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/update_operator" method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Editar Operador</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit-operator-id" name="operator_id">
+                    <div class="form-group">
+                        <label for="edit-name">Nome:</label>
+                        <input type="text" class="form-control" id="edit-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-employee_number">Número do Empregado:</label>
+                        <input type="text" class="form-control" id="edit-employee_number" name="employee_number" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Mudanças</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#editModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var id = button.data('id')
+        var name = button.data('name')
+        var employee_number = button.data('employee_number')
+
+        var modal = $(this)
+        modal.find('.modal-body #edit-operator-id').val(id)
+        modal.find('.modal-body #edit-name').val(name)
+        modal.find('.modal-body #edit-employee_number').val(employee_number)
+    })
+</script>
+{% endblock %}

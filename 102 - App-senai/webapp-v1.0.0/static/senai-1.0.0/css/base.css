@@ -189,6 +189,7 @@ select.form-control {
     box-shadow: 0 0 10px green;
     margin-top: 10px;
     text-align: center;
+    margin-left: 10px;
 }
 
 .card-inactive {
