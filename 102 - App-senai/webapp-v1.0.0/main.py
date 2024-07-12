@@ -826,7 +826,7 @@ def autenticacao():
     else:
         return flask.render_template('autenticacao.html')
 
-@app.route('/')
+
 @app.route('/cadastro_producao_1')
 @flask_login.login_required
 def cadastro_producao_1():
@@ -838,7 +838,6 @@ def cadastro_producao_1():
 
     return flask.render_template('producao_1.html', machine_names=machine_names, motivos=motivos, componentes=componentes, produtos=produtos)
 
-@app.route('/')
 @app.route('/cadastro_producao_2')
 @flask_login.login_required
 def cadastro_producao_2():
@@ -850,7 +849,6 @@ def cadastro_producao_2():
 
     return flask.render_template('producao_2.html', machine_names=machine_names, motivos=motivos, componentes=componentes, produtos=produtos)
 
-@app.route('/')
 @app.route('/cadastro_producao_3')
 @flask_login.login_required
 def cadastro_producao_3():
@@ -1129,6 +1127,7 @@ def status():
     status = fetch_workstation_status()
     return jsonify(status)
 
+@app.route('/')
 @app.route('/index')
 @flask_login.login_required
 def index():
