@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-center">
-        <h1 class="my-4">Workstation Status</h1>
+<div class="container-fluid h-100">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center justify-content-center">
+            <h1 class="my-4">Workstation Status</h1>
+        </div>
+    </div>    
+    <div class="row" id="workstation-cards">
+        <!-- Workstation cards will be injected here by JavaScript -->
     </div>
 </div>    
-<div class="row" id="workstation-cards">
-    <!-- Workstation cards will be injected here by JavaScript -->
-</div>
 <script>
     function fetchStatus() {
         $.getJSON('/status', function (data) {
