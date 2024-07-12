@@ -2,15 +2,16 @@
 
 {% block content %}
 <div class="container-fluid h-100">
-    <div class="container-fluid">
-        <div class="d-flex align-items-center justify-content-center">
-            <h1 class="my-4">Workstation Status</h1>
+
+    <div class="card text-black o-hidden h-100 bg-light border-info">
+        <div class="d-flex card-header align-items-center justify-content-center">
+            <h4 class="">Monitoramento das Workstations</h4>
         </div>
-    </div>    
-    <div class="row" id="workstation-cards">
-        <!-- Workstation cards will be injected here by JavaScript -->
+        <div class="row" id="workstation-cards">
+            <!-- Workstation cards will be injected here by JavaScript -->
+        </div>
     </div>
-</div>    
+</div>
 <script>
     function fetchStatus() {
         $.getJSON('/status', function (data) {
@@ -22,8 +23,8 @@
                             <div class="card ${cardClass} mb-4">
                                 <div class="card-body">
                                     <h5 class="card-title">${ws.workstation_name}</h5>
-                                    <p class="card-text">Operator: ${ws.operator_name}</p>
-                                    <p class="card-text">Start Time: ${ws.start_time}</p>
+                                    <p class="card-text">Operador: ${ws.operator_name}</p>
+                                    <p class="card-text">Início de Operação: ${ws.start_time}</p>
                                 </div>
                             </div>
                         </div>

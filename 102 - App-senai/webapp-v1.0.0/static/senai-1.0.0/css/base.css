@@ -12,8 +12,13 @@ body {
     height: 100%;
 }
 
+.card-header{
+    background-color: #8fd2e296 !important;
+    border-radius: 15px !important;
+}
+
 .navbar {
-    background-color: #bfe7f1;
+    background-color: #597beb93;
     margin-bottom: 2px;
     border-color: #043573;
 }
@@ -182,11 +187,14 @@ select.form-control {
 .card-active {
     border: 2px solid green;
     box-shadow: 0 0 10px green;
+    margin-top: 10px;
+    text-align: center;
 }
 
 .card-inactive {
     border: 2px solid red;
     box-shadow: 0 0 10px red;
+    margin-top: 10px;
 }
 
 .fa-blink {
