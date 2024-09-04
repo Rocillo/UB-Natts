@@ -822,7 +822,7 @@ def relatorio_refugo():
 @app.route('/autenticacao', methods=['GET'])
 def autenticacao():
     if flask_login.current_user.is_authenticated:
-        return flask.redirect(flask.url_for('cadastro_producao_1'))
+        return flask.redirect(flask.url_for('index'))
     else:
         return flask.render_template('autenticacao.html')
 
@@ -1222,6 +1222,35 @@ def delete_operator_route():
         return redirect(url_for('manage_operators'))
     else:
         return "Error deleting operator", 500
+
+@app.route('/api/worksessions')
+def worksessions_data():
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM public.worksessions')
+    worksessions = cur.fetchall()
+    cur.close()
+    conn.close()
+    
+    # Convertendo para um formato que o DataTables possa utilizar
+    data = []
+    for session in worksessions:
+        data.append({
+            'session_id': session[0],
+            'operator_id': session[1],
+            'workstation_id': session[2],
+            'start_time': session[3].strftime('%Y-%m-%d %H:%M:%S'),
+            'end_time': session[4].strftime('%Y-%m-%d %H:%M:%S') if session[4] else None,
+            'is_done': session[5]
+        })
+    
+    return jsonify({'data': data})
+
+@app.route('/hystoric')
+def hystoric():
+    machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
+    operators = fetch_all_operators()
+    return flask.render_template('hystoric.html',  operators=operators, machine_names=machine_names)
 
 @app.route('/status')
 @flask_login.login_required

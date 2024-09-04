@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Work Sessions</h1>
+    <div class="table-responsive">
+        <table id="worksessions-table" class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Session ID</th>
+                    <th>Operator ID</th>
+                    <th>Workstation ID</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Is Done</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#worksessions-table').DataTable({
+            "ajax": "/api/worksessions",
+            "columns": [
+                { "data": "session_id" },
+                { "data": "operator_id" },
+                { "data": "workstation_id" },
+                { "data": "start_time" },
+                { "data": "end_time" },
+                { "data": "is_done" }
+            ]
+        });
+    });
+</script>
+{% endblock %}
