@@ -15,11 +15,23 @@
                 <label for="employee_number">Número do Cartão:</label>
                 <input type="text" class="form-control" id="employee_number" name="employee_number" required>
             </div>
+            <div class="form-group">
+                <label for="workstation">Estação de Trabalho:</label>
+                <select class="form-control" id="workstation" name="workstation" required>
+                    <option value="">Selecione a estação de trabalho</option>
+                    {% for workstation in workstations %}
+                    <option value="{{ workstation[0] }}">{{ workstation[1] }}</option>
+                    <!-- workstation_id, workstation_name -->
+                    {% endfor %}
+                </select>
+            </div>
             <div class="d-flex align-items-center justify-content-center">
-                <button type="submit" class="btn btn-primary align-items-center justify-content-center">Adicionar Operador</button>
+                <button type="submit" class="btn btn-primary align-items-center justify-content-center">Adicionar
+                    Operador</button>
             </div>
         </form>
     </div>
+
     <div class="d-flex align-items-center justify-content-center">
         <h4 class="my-4">Operadores:</h4>
     </div>
@@ -30,6 +42,7 @@
                     <th>ID</th>
                     <th>Nome</th>
                     <th>Número do Cartão</th>
+                    <th>Estação de Trabalho</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -39,8 +52,12 @@
                     <td>{{ operator[0] }}</td>
                     <td>{{ operator[1] }}</td>
                     <td>{{ operator[2] }}</td>
+                    <td>{{ operator[4] }} <!-- Exibir o nome da estação --></td>
                     <td>
-                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" data-id="{{ operator[0] }}" data-name="{{ operator[1] }}" data-employee_number="{{ operator[2] }}">Editar</button>
+                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal"
+                            data-id="{{ operator[0] }}" data-name="{{ operator[1] }}"
+                            data-employee_number="{{ operator[2] }}" data-workstation="{{ operator[3] }}"
+                            data-workstation_name="{{ operator[4] }}">Editar</button>
                         <form action="/delete_operator" method="POST" class="d-inline">
                             <input type="hidden" name="operator_id" value="{{ operator[0] }}">
                             <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
@@ -72,7 +89,17 @@
                     </div>
                     <div class="form-group">
                         <label for="edit-employee_number">Número do Empregado:</label>
-                        <input type="text" class="form-control" id="edit-employee_number" name="employee_number" required>
+                        <input type="text" class="form-control" id="edit-employee_number" name="employee_number"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-workstation">Estação de Trabalho:</label>
+                        <select class="form-control" id="edit-workstation" name="workstation" required>
+                            <option value="">Selecione a estação de trabalho</option>
+                            {% for workstation in workstations %}
+                            <option value="{{ workstation[0] }}">{{ workstation[1] }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -84,17 +111,23 @@
     </div>
 </div>
 
+
 <script>
     $('#editModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget)
-        var id = button.data('id')
-        var name = button.data('name')
-        var employee_number = button.data('employee_number')
+        var button = $(event.relatedTarget);
+        var operatorId = button.data('id');
+        var operatorName = button.data('name');
+        var employeeNumber = button.data('employee_number');
+        var workstationId = button.data('workstation');  // ID da estação de trabalho atual
 
-        var modal = $(this)
-        modal.find('.modal-body #edit-operator-id').val(id)
-        modal.find('.modal-body #edit-name').val(name)
-        modal.find('.modal-body #edit-employee_number').val(employee_number)
-    })
+        var modal = $(this);
+        modal.find('#edit-operator-id').val(operatorId);
+        modal.find('#edit-name').val(operatorName);
+        modal.find('#edit-employee_number').val(employeeNumber);
+
+        // Selecionar a estação de trabalho atual no select
+        modal.find('#edit-workstation').val(workstationId);
+    });
+
 </script>
 {% endblock %}

@@ -1129,25 +1129,44 @@ def fetch_all_operators():
 
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM Operators")
+        cursor.execute("""SELECT 
+                                o.operator_id, 
+                                o.name AS operator_name, 
+                                o.employee_number, 
+                                o.workstation_id, 
+                                w.name AS name
+                            FROM 
+                                public.operators o
+                            LEFT JOIN 
+                                public.workstations w 
+                            ON 
+                                o.workstation_id = w.workstation_id
+                            ORDER BY 
+                                o.operator_id ASC;
+                            """)
         operators = cursor.fetchall()
-        return operators
+        
+        # Obter estações de trabalho
+        cursor.execute("SELECT workstation_id, name FROM Workstations order by workstation_id ASC")
+        workstations = cursor.fetchall()
+        
+        return operators, workstations
     except Exception as e:
         print(f"Error fetching operators: {e}")
-        return []
+        return [], []
     finally:
         cursor.close()
         conn.close()
 
 # Add a new operator
-def add_operator(name, employee_number):
+def add_operator(name, employee_number, workstation):
     conn = connect_db()
     if not conn:
         return False
 
     cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO Operators (name, employee_number) VALUES (%s, %s)", (name, employee_number))
+        cursor.execute("INSERT INTO Operators (name, employee_number, workstation_id) VALUES (%s, %s, %s)", (name, employee_number, workstation))
         conn.commit()
         return True
     except Exception as e:
@@ -1159,14 +1178,14 @@ def add_operator(name, employee_number):
         conn.close()
 
 # Update an operator
-def update_operator(operator_id, name, employee_number):
+def update_operator(operator_id, name, employee_number, workstation):
     conn = connect_db()
     if not conn:
         return False
 
     cursor = conn.cursor()
     try:
-        cursor.execute("UPDATE Operators SET name = %s, employee_number = %s WHERE operator_id = %s", (name, employee_number, operator_id))
+        cursor.execute("UPDATE Operators SET name = %s, employee_number = %s, workstation_id = %s WHERE operator_id = %s", (name, employee_number, workstation, operator_id))
         conn.commit()
         return True
     except Exception as e:
@@ -1200,7 +1219,8 @@ def delete_operator(operator_id):
 def add_operator_route():
     name = request.form['name']
     employee_number = request.form['employee_number']
-    if add_operator(name, employee_number):
+    workstation = request.form['workstation']
+    if add_operator(name, employee_number, workstation):
         return redirect(url_for('manage_operators'))
     else:
         return "Error adding operator", 500
@@ -1210,7 +1230,8 @@ def update_operator_route():
     operator_id = request.form['operator_id']
     name = request.form['name']
     employee_number = request.form['employee_number']
-    if update_operator(operator_id, name, employee_number):
+    workstation = request.form['workstation']
+    if update_operator(operator_id, name, employee_number, workstation):
         return redirect(url_for('manage_operators'))
     else:
         return "Error updating operator", 500
@@ -1276,5 +1297,6 @@ def manage_workstations():
 @app.route('/manage_operators')
 def manage_operators():
     machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
-    operators = fetch_all_operators()
-    return flask.render_template('manage_operators.html', operators=operators, machine_names=machine_names)
+    operators, workstations = fetch_all_operators()
+    
+    return flask.render_template('manage_operators.html', operators=operators, machine_names=machine_names, workstations=workstations)

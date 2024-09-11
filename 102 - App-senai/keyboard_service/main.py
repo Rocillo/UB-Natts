@@ -10,7 +10,7 @@ DB_USER = 'postgres'
 DB_PASSWORD = 'postgres'
 
 # Length of the employee number (for example, 5 digits)
-EMPLOYEE_NUMBER_LENGTH = 5
+EMPLOYEE_NUMBER_LENGTH = 10
 
 # Global buffer for the employee number
 employee_number_buffer = ""
@@ -33,22 +33,39 @@ def connect_db():
 def insert_work_session(conn, employee_number):
     cursor = conn.cursor()
     try:
-        # Fetch operator_id using employee_number
+        # Buscar operator_id usando o employee_number
         cursor.execute("SELECT operator_id FROM Operators WHERE employee_number = %s", (employee_number,))
         operator_id = cursor.fetchone()
         
         if operator_id:
             operator_id = operator_id[0]
-            # Assuming a workstation_id is known or provided (for example, 1)
-            workstation_id = 2
+            workstation_id = 2  # Esse id virá da estação de cartão. (Ou seja, virá do Novus)
             start_time = datetime.now()
 
+            # Verificar se já existe uma sessão ativa para o operator_id e workstation_id
             cursor.execute(
-                "INSERT INTO WorkSessions (operator_id, workstation_id, start_time) VALUES (%s, %s, %s)",
-                (operator_id, workstation_id, start_time)
+                """
+                SELECT 1 FROM WorkSessions 
+                WHERE operator_id = %s AND workstation_id = %s AND is_done = false
+                """, 
+                (operator_id, workstation_id)
             )
-            conn.commit()
-            print(f"New work session started for employee number: {employee_number}")
+            active_session = cursor.fetchone()
+
+            if active_session:
+                print(f"A work session is already active for operator {employee_number} at workstation {workstation_id}.")
+                
+            else:
+                # Inserir nova sessão de trabalho se não houver uma ativa
+                cursor.execute(
+                    """
+                    INSERT INTO WorkSessions (operator_id, workstation_id, start_time) 
+                    VALUES (%s, %s, %s)
+                    """,
+                    (operator_id, workstation_id, start_time)
+                )
+                conn.commit()
+                print(f"New work session started for employee number: {employee_number}")
         else:
             print(f"No operator found with employee number: {employee_number}")
 
@@ -57,6 +74,7 @@ def insert_work_session(conn, employee_number):
         print(f"Error inserting work session: {e}")
     finally:
         cursor.close()
+
 
 # Function to handle keyboard input
 def handle_keyboard_input(event):
