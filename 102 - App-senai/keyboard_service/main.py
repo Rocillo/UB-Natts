@@ -34,12 +34,13 @@ def insert_work_session(conn, employee_number):
     cursor = conn.cursor()
     try:
         # Buscar operator_id usando o employee_number
-        cursor.execute("SELECT operator_id FROM Operators WHERE employee_number = %s", (employee_number,))
-        operator_id = cursor.fetchone()
+        cursor.execute("SELECT operator_id, workstation_id FROM Operators WHERE employee_number = %s", (employee_number,))
+        resultado = cursor.fetchone()
         
-        if operator_id:
-            operator_id = operator_id[0]
-            workstation_id = 2  # Esse id virá da estação de cartão. (Ou seja, virá do Novus)
+        if resultado:
+            operator_id, workstation_id = resultado
+            #workstation_id_teste = workstation_string(int)
+            #workstation_id = 2  # Esse id virá da estação de cartão. (Ou seja, virá do Novus)
             start_time = datetime.now()
 
             # Verificar se já existe uma sessão ativa para o operator_id e workstation_id
