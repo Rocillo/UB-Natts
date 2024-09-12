@@ -1,0 +1,2 @@
+#logica para comunicação Mqtt
+
