@@ -39,204 +39,64 @@ def on_message(client, userdata, msg):
         dt = datetime.now()
         #print(ch)
         dtstring = dt.strftime ('%Y/%m/%d %H:%M:%S')
-        print (str(ch))
-        status_ch1 = ch['events']['chd1']['edge']
-        status_ch2 = ch['events']['chd2']['edge']
-        status_ch3 = ch['events']['chd3']['edge']
-        status_ch4 = ch['events']['chd4']['edge']
-        status_ch5 = ch['events']['chd5']['edge']
-        status_ch6 = ch['events']['chd6']['edge']
-        while ("chd1" in str(ch)):
-            if ("chd2" in str(ch)):
-                try:
-                    contagem_maq1 = ch['events']['chd1']['edge']
-                    contagem_maq2 = ch['events']['chd2']['edge']
-                    if(contagem_maq1==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 1)")
-                        print('Adicionado Ciclo - BANCADA 1 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd1": 1}}}')
-                    if(contagem_maq2==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 1)")
-                        print('Adicionado Ciclo - BANCADA 1 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd2": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
-            elif ("chd3" in str(ch)):
-                try:
-                    contagem_maq1 = ch['events']['chd1']['edge']
-                    contagem_maq3 = ch['events']['chd3']['edge']
-                    if(contagem_maq1==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 1)")
-                        print('Adicionado Ciclo - BANCADA 1 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd1": 1}}}')
-                    if(contagem_maq3==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 2)")
-                        print('Adicionado Ciclo - BANCADA 2 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd3": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
-            elif ("chd4" in str(ch)):
-                try:
-                    contagem_maq1 = ch['events']['chd1']['edge']
-                    contagem_maq4 = ch['events']['chd4']['edge']
-                    if(contagem_maq1==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 1)")
-                        print('Adicionado Ciclo - BANCADA 1 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd1": 1}}}')
-                    if(contagem_maq4==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 2)")
-                        print('Adicionado Ciclo - BANCADA 2 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd4": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
-            elif ("chd5" in str(ch)):
-                try:
-                    contagem_maq1 = ch['events']['chd1']['edge']
-                    contagem_maq5 = ch['events']['chd5']['edge']
-                    if(contagem_maq1==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 1)")
-                        print('Adicionado Ciclo - BANCADA 1 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd1": 1}}}')
-                    if(contagem_maq5==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 3)")
-                        print('Adicionado Ciclo - BANCADA 3 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd5": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
-            
-            elif("chd6" in str(ch)):
-                try:
-                    contagem_maq1 = ch['events']['chd1']['edge']
-                    contagem_maq6 = ch['events']['chd6']['edge']
-                    if(contagem_maq1==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 1)")
-                        print('Adicionado Ciclo - BANCADA 1 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd1": 1}}}')  
-                    if(contagem_maq6==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 4)")
-                        print('Adicionado Ciclo - BANCADA 4 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd6": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
-            else:
-                try:
-                    contagem_maq1 = ch['events']['chd1']['edge']
-                    #Dados da MÁQUINA - 1
-                    if(contagem_maq1==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 1)")
-                        print('Adicionado Ciclo - BANCADA 1 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd1": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
+        print (str(ch), ch['events'])
 
-            if ("chd1" in str(ch)):
-                try:
-                    contagem_maq1 = ch['events']['chd1']['edge']
-                    contagem_maq6 = ch['events']['chd6']['edge']
-                    if(contagem_maq1==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 1)")
-                        print('Adicionado Ciclo - BANCADA 1 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd1": 1}}}')
-                    if(contagem_maq6==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 4)")
-                        print('Adicionado Ciclo - BANCADA 4 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd6": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
-            elif ("chd2" in str(ch)):
-                try:
-                    contagem_maq2 = ch['events']['chd2']['edge']
-                    contagem_maq6 = ch['events']['chd6']['edge']
-                    if(contagem_maq2==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 1)")
-                        print('Adicionado Ciclo - BANCADA 1 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd2": 1}}}')
-                    if(contagem_maq6==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 4)")
-                        print('Adicionado Ciclo - BANCADA 4 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd6": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break  
-            elif ("chd3" in str(ch)):
-                try:
-                    contagem_maq3 = ch['events']['chd3']['edge']
-                    contagem_maq6 = ch['events']['chd6']['edge']
-                    if(contagem_maq3==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 2)")
-                        print('Adicionado Ciclo - BANCADA 2 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd3": 1}}}')
-                    if(contagem_maq6==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 4)")
-                        print('Adicionado Ciclo - BANCADA 4 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd6": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
+       
 
-            elif ("chd4" in str(ch)):
-                try:
-                    contagem_maq4 = ch['events']['chd4']['edge']
-                    contagem_maq6 = ch['events']['chd6']['edge']
-                    if(contagem_maq4==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 2)")
-                        print('Adicionado Ciclo - BANCADA 2 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd4": 1}}}')
-                    if(contagem_maq6==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 4)")
-                        print('Adicionado Ciclo - BANCADA 4 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd6": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
-            elif("chd5" in str(ch)):
-                try:
-                    contagem_maq5 = ch['events']['chd5']['edge']
-                    contagem_maq6 = ch['events']['chd6']['edge']
-                    if(contagem_maq5==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 3)")
-                        print('Adicionado Ciclo - BANCADA 3 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd5": 1}}}')
-                    if(contagem_maq6==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 4)")
-                        print('Adicionado Ciclo - BANCADA 4 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd6": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
-            else:
-                try:
-                    contagem_maq6 = ch['events']['chd6']['edge']
-                    #Dados da MÁQUINA - 5
-                    if(contagem_maq6==0):
-                        databaseOBJ.writeRaw("insert into pecas(data_inicio, data_fim, id_maquina) VALUES('"+ str(dtstring) +"','"+ str(dtstring) +"', 4)")
-                        print('Adicionado Ciclo - BANCADA 4 - ' + str(dtstring))
-                        client.publish("teste/teste/nvus", '{"timestamp":0,"desired": {"reset_counters" : {"reset_chd6": 1}}}')
-                    break
-                except:
-                    print('Aguardando Mensagem ...')
-                    break
-                
+        # Canal 1
+        if "chd1" in str(ch):
+            status_ch1 = ch['events']['chd1']['edge']
+            timestamp_ch1 = ch['events']['chd1']['timestamp']
+            date_timestamp_ch1 = datetime.utcfromtimestamp(timestamp_ch1).strftime('%d-%m-%Y %H:%M:%S')
+            print(f"Status Canal 1: {status_ch1}, Timestamp: {timestamp_ch1}, Data: {date_timestamp_ch1}")
+            if status_ch1 == 0:  # Substitua "ativado" pelo evento específico
+                print("Canal 1 Ativado")
 
-    #Carrega na Variavel os dados recebidos no Tópico
+        # Canal 2
+        if "chd2" in str(ch):
+            status_ch2 = ch['events']['chd2']['edge']
+            timestamp_ch2 = ch['events']['chd2']['timestamp']
+            date_timestamp_ch2 = datetime.utcfromtimestamp(timestamp_ch2).strftime('%d-%m-%Y %H:%M:%S')
+            print(f"Status Canal 2: {status_ch2}, Timestamp: {timestamp_ch2}, Data: {date_timestamp_ch2}")
+            if status_ch2 == 0:
+                print("Canal 2 Ativado")
+
+        # Canal 3
+        if "chd3" in str(ch):
+            status_ch3 = ch['events']['chd3']['edge']
+            timestamp_ch3 = ch['events']['chd3']['timestamp']
+            date_timestamp_ch3 = datetime.utcfromtimestamp(timestamp_ch3).strftime('%d-%m-%Y %H:%M:%S')
+            print(f"Status Canal 3: {status_ch3}, Timestamp: {timestamp_ch3}, Data: {date_timestamp_ch3}")
+            if status_ch3 == 0:
+                print("Canal 3 Ativado")
+
+        # Canal 4
+        if "chd4" in str(ch):
+            status_ch4 = ch['events']['chd4']['edge']
+            timestamp_ch4 = ch['events']['chd4']['timestamp']
+            date_timestamp_ch4 = datetime.utcfromtimestamp(timestamp_ch4).strftime('%d-%m-%Y %H:%M:%S')
+            print(f"Status Canal 4: {status_ch4}, Timestamp: {timestamp_ch4}, Data: {date_timestamp_ch4}")
+            if status_ch4 == 0:
+                print("Canal 4 Ativado")
+
+        # Canal 5
+        if "chd5" in str(ch):
+            status_ch5 = ch['events']['chd5']['edge']
+            timestamp_ch5 = ch['events']['chd5']['timestamp']
+            date_timestamp_ch5 = datetime.utcfromtimestamp(timestamp_ch5).strftime('%d-%m-%Y %H:%M:%S')
+            print(f"Status Canal 5: {status_ch5}, Timestamp: {timestamp_ch5}, Data: {date_timestamp_ch5}")
+            if status_ch5 == 0:
+                print("Canal 5 Ativado")
+
+        # Canal 6
+        if "chd6" in str(ch):
+            status_ch6 = ch['events']['chd6']['edge']
+            timestamp_ch6 = ch['events']['chd6']['timestamp']
+            date_timestamp_ch6 = datetime.utcfromtimestamp(timestamp_ch6).strftime('%d-%m-%Y %H:%M:%S')
+            print(f"Status Canal 6: {status_ch6}, Timestamp: {timestamp_ch6}, Data: {date_timestamp_ch6}")
+            if status_ch6 == 0:
+                print("Canal 6 Ativado")
+    
 
 #Inicialização da Aplicação - LOOP FOREVER
    
