@@ -99,6 +99,41 @@ def on_message(client, userdata, msg, conn):
                     print("start_time atualizado com sucesso para a sessão mais recente.")
                 else:
                     print("Nenhuma sessão encontrada para workstation_id = 1 com is_done = 'false'.")
+            
+            # Quando o cartão for retirado (ch1 == 1)
+            elif status_ch1 == 1:  
+                print("Cartão retirado do posto de trabalho")
+                data_atual = dtstring
+
+                # Seleciona a sessão mais recente com workstation_id = 1, is_done = 'false', e start_time já definido
+                cursor.execute("""
+                    SELECT session_id, start_time 
+                    FROM worksessions
+                    WHERE workstation_id = 1 AND is_done = 'false' AND start_time IS NOT NULL
+                    ORDER BY start_time DESC
+                    LIMIT 1;
+                """)
+                
+                resultado = cursor.fetchone()
+                
+                if resultado:
+                    session_id = resultado[0]
+                    start_time = resultado[1]
+
+                    if start_time:  # Verifica se o start_time está definido
+                        # Atualiza o campo end_time e is_done da sessão mais recente
+                        cursor.execute("""
+                            UPDATE worksessions
+                            SET end_time = %s, is_done = 'true'
+                            WHERE session_id = %s;
+                        """, (data_atual, session_id))
+                        
+                        conn.commit()
+                        print("end_time atualizado e sessão marcada como finalizada.")
+                    else:
+                        print("Sessão encontrada, mas start_time não está definido.")
+                else:
+                    print("Nenhuma sessão válida encontrada para workstation_id = 1 com is_done = 'false' e start_time definido.")
 
                 
                     
