@@ -13,7 +13,8 @@ mqttip = "192.168.0.3"
 client = mqtt.Client(clean_session=True)
 #client.username_pw_set("ist","ist")
 client.connect(mqttip, 1883, 60)
-
+# Variável global para a conexão
+conn = None
 qtprod = ''
 estado_maq1=0
 estado_maq2=0
@@ -25,23 +26,18 @@ contagem_maq4=0
 contagem_maq5=0
 contagem_maq6=0
 
-# Database connection parameters
-DB_HOST = 'localhost'
-DB_NAME = 'ub_natts'
-DB_USER = 'postgres'
-DB_PASSWORD = 'postgres'
-# Connect to the PostgreSQL database
+# Função para conectar ao banco de dados (é chamada dentro de on_message)
 def connect_db():
     try:
         conn = psycopg2.connect(
-            host=DB_HOST,
-            database=DB_NAME,
-            user=DB_USER,
-            password=DB_PASSWORD
+            host='localhost',
+            database='ub_natts',
+            user='postgres',
+            password='postgres'
         )
         return conn
     except Exception as e:
-        print(f"Error connecting to database: {e}")
+        print(f"Erro ao conectar ao banco de dados: {e}")
         return None
 
 
@@ -51,8 +47,7 @@ def on_connect(client, userdata, flags, rc):
     #Declara os tópicos que está inscrito
     client.subscribe("NOVUS/Maquina01/events",0)
 
-def on_message(client, userdata, msg, conn):
-    cursor = conn.cursor()
+def on_message(client, userdata, msg):
     dado = str(msg.payload).split("'")
     t=str(dado[1])
     qtprod = t
@@ -64,16 +59,17 @@ def on_message(client, userdata, msg, conn):
 
         # Canal 1
         if "chd1" in str(ch):
-            
+
+            conn = connect_db()
             status_ch1 = ch['events']['chd1']['edge']
             timestamp_ch1 = ch['events']['chd1']['timestamp']
             date_timestamp_ch1 = datetime.fromtimestamp(timestamp_ch1).strftime('%d-%m-%Y %H:%M:%S')
             print(f"Status Canal 1: {status_ch1}, Timestamp: {timestamp_ch1}, Data: {date_timestamp_ch1}")
-            
+            cursor = conn.cursor()
             if status_ch1 == 0:  # Quando o canal 1 for ativado
                 print("Canal 1 Ativado")
                 data_atual = dtstring
-
+                
                 # Seleciona a sessão mais recente com workstation_id = 1 e is_done = 'false'
                 cursor.execute("""
                     SELECT session_id 
