@@ -28,8 +28,34 @@ services:
     restart: unless-stopped
     depends_on:
       - senai-compose-postgres
+      - senai-compose-novus
+      - senai-compose-reader
     networks:
       - senai-compose-network
+  senai-compose-novus:
+    image: novus:1.0.0
+    environment:
+      DBUSER: "postgres"
+      DBPASSWORD: "postgres"
+      DBNAME: "postgres"
+      DBHOST: "senai-compose-postgres"
+    restart: unless-stopped
+    networks:
+      - senai-compose-network
+    depends_on:
+      - senai-compose-postgres
+  senai-compose-mqtt-2:
+    image: reader:1.0.0
+    environment:
+      DBUSER: "postgres"
+      DBPASSWORD: "postgres"
+      DBNAME: "postgres"
+      DBHOST: "senai-compose-postgres"
+    restart: unless-stopped
+    networks:
+      - senai-compose-network
+    depends_on:
+      - senai-compose-postgres
 
 networks: 
   senai-compose-network:
