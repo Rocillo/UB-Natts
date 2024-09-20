@@ -3,7 +3,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 class postgresDatabase():
-    def __init__(self, user='postgres', password='postgres', host='localhost', dbname='ub_natts'):
+    def __init__(self, user='postgres', password='postgres', host='localhost', dbname='postgres'):
         self.lastError = None
         self.connectionString="user="+user+" password="+password+" host="+host+" dbname="+dbname
 
