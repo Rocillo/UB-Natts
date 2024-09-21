@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_DB: "ub_natts"
     ports:
-      - "5433:5432"
+      - "5432:5432"
     restart: unless-stopped
     volumes:
       - natts-postgres-storage:/var/lib/postgresql/data
@@ -24,7 +24,7 @@ services:
       DBHOST: "senai-compose-postgres"
       SECRETKEY: "e182c9c42f3c11ebadc10242ac120002"
     ports:
-      - "81:80"
+      - "80:80"
     restart: unless-stopped
     depends_on:
       - senai-compose-postgres
@@ -37,19 +37,19 @@ services:
     environment:
       DBUSER: "postgres"
       DBPASSWORD: "postgres"
-      DBNAME: "postgres"
+      DBNAME: "ub_natts"
       DBHOST: "senai-compose-postgres"
     restart: unless-stopped
     networks:
       - senai-compose-network
     depends_on:
       - senai-compose-postgres
-  senai-compose-mqtt-2:
+  senai-compose-reader:
     image: reader:1.0.0
     environment:
       DBUSER: "postgres"
       DBPASSWORD: "postgres"
-      DBNAME: "postgres"
+      DBNAME: "ub_natts"
       DBHOST: "senai-compose-postgres"
     restart: unless-stopped
     networks:
