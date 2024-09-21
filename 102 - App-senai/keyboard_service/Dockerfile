@@ -1,7 +1,7 @@
 FROM python:3.8-slim-buster
 RUN apt update
 RUN apt-get install -y python3-dev build-essential
-RUN apt-get install -y kbd
+RUN apt-get install -y kbd && loadkeys us
 RUN apt-get -y install libpq-dev
 RUN apt update && apt install tzdata -y
 ENV TZ="America/Sao_Paulo"
