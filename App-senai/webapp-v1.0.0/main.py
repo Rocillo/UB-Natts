@@ -14,15 +14,15 @@ from datetime import datetime
 #Flask configuration
 versao=''
 app = flask.Flask(__name__)
-#app.secret_key = 'key'
-app.secret_key = os.environ['SECRETKEY']
+app.secret_key = 'key'
+#app.secret_key = os.environ['SECRETKEY']
 #Flask-Login configuration
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 #Database configuration
-databaseOBJ=database.postgresDatabase(user=os.environ['DBUSER'], password=os.environ['DBPASSWORD'], host=os.environ['DBHOST'], dbname=os.environ['DBNAME'])
-#databaseOBJ=database.postgresDatabase(host='localhost')
+#databaseOBJ=database.postgresDatabase(user=os.environ['DBUSER'], password=os.environ['DBPASSWORD'], host=os.environ['DBHOST'], dbname=os.environ['DBNAME'])
+databaseOBJ=database.postgresDatabase(host='localhost')
 
 ######################################################## AUTHENTICATION ####################################################
 
@@ -205,14 +205,10 @@ def relatorio():
 def historico():
     machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
     return flask.render_template('historico.html', machine_names=machine_names)
-@app.route('/hystoric')
-@flask_login.login_required
-def hystoric():
-    machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
-    return flask.render_template('hystoric.html', machine_names=machine_names)
+
 
 # Database connection parameters
-DB_HOST = '192.168.86.91'
+DB_HOST = 'localhost' #localhost | 192.168.86.91
 DB_NAME = 'ub_natts'
 DB_USER = 'postgres'
 DB_PASSWORD = 'postgres'
