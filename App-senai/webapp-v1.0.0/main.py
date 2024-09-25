@@ -207,7 +207,7 @@ def historico():
     return flask.render_template('historico.html', machine_names=machine_names)
 
 # Database connection parameters
-DB_HOST = '192.168.86.89'
+DB_HOST = '192.168.86.91'
 DB_NAME = 'ub_natts'
 DB_USER = 'postgres'
 DB_PASSWORD = 'postgres'
