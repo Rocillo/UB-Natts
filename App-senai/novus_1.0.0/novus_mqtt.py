@@ -9,7 +9,7 @@ from datetime import datetime
 
 #databaseOBJ=database.postgresDatabase(host='localhost')
 
-mqttip = "192.168.86.89"
+mqttip = "192.168.86.91"
 client = mqtt.Client(clean_session=True)
 #client.username_pw_set("ist","ist")
 client.connect(mqttip, 1883, 60)
