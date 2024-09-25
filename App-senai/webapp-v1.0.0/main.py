@@ -205,6 +205,11 @@ def relatorio():
 def historico():
     machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
     return flask.render_template('historico.html', machine_names=machine_names)
+@app.route('/hystoric')
+@flask_login.login_required
+def hystoric():
+    machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
+    return flask.render_template('hystoric.html', machine_names=machine_names)
 
 # Database connection parameters
 DB_HOST = '192.168.86.91'
