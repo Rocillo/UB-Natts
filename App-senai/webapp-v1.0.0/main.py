@@ -227,6 +227,11 @@ def connect_db():
         print(f"Error connecting to database: {e}")
         return None
 
+# Função para transformar os resultados do cursor em uma lista de dicionários
+def dict_fetchall(cursor):
+    columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
+
 # Fetch workstation status
 def fetch_workstation_status():
     conn = connect_db()
@@ -506,6 +511,183 @@ def delete_operator_route():
         return redirect(url_for('manage_operators'))
     else:
         return "Error deleting operator", 500
+    
+@app.route('/data/workstation-utilization')
+def workstation_utilization():
+    try:
+        con = connect_db()
+        cur = con.cursor()
+
+        # Consulta para a utilização de estações de trabalho
+        query = """
+            SELECT w.name, COUNT(*) AS sessions_count
+            FROM public.worksessions ws
+            JOIN public.workstations w ON ws.workstation_id = w.workstation_id
+            WHERE ws.is_done = true
+            GROUP BY w.name;
+        """
+        cur.execute(query)
+        result = dict_fetchall(cur)
+
+        labels = [row['name'] for row in result]  # Nomes das estações de trabalho
+        data = [row['sessions_count'] for row in result]  # Total de sessões
+
+        cur.close()
+        con.close()
+
+        return jsonify({'labels': labels, 'data': data})
+
+    except Exception as e:
+        print(f"Erro ao executar a consulta: {e}")
+        return jsonify({'error': 'Erro ao processar os dados'}), 500
+
+@app.route('/data/sessions-per-day')
+def sessions_per_day():
+    try:
+        con = connect_db()
+        cur = con.cursor()
+
+        # Consulta para contar as sessões por dia da semana
+        query = """
+            SELECT TO_CHAR(ws.start_time, 'Day') AS day_of_week, COUNT(*) AS session_count
+            FROM public.worksessions ws
+            WHERE ws.is_done = true
+            GROUP BY day_of_week
+            ORDER BY MIN(ws.start_time);
+        """
+        cur.execute(query)
+        result = dict_fetchall(cur)
+
+        labels = [row['day_of_week'].strip() for row in result]  # Dias da semana
+        data = [row['session_count'] for row in result]  # Contagem de sessões
+
+        cur.close()
+        con.close()
+
+        return jsonify({'labels': labels, 'data': data})
+
+    except Exception as e:
+        print(f"Erro ao executar a consulta: {e}")
+        return jsonify({'error': 'Erro ao processar os dados'}), 500
+
+@app.route('/data/sessions-per-month')
+def sessions_per_month():
+    try:
+        con = connect_db()
+        cur = con.cursor()
+
+        # Consulta para contar as sessões por mês
+        query = """
+            SELECT TO_CHAR(ws.start_time, 'Month') AS month, COUNT(*) AS session_count
+            FROM public.worksessions ws
+            WHERE ws.is_done = true
+            GROUP BY month
+            ORDER BY MIN(ws.start_time);
+        """
+        cur.execute(query)
+        result = dict_fetchall(cur)
+
+        labels = [row['month'].strip() for row in result]  # Meses
+        data = [row['session_count'] for row in result]  # Contagem de sessões
+
+        cur.close()
+        con.close()
+
+        return jsonify({'labels': labels, 'data': data})
+
+    except Exception as e:
+        print(f"Erro ao executar a consulta: {e}")
+        return jsonify({'error': 'Erro ao processar os dados'}), 500
+
+@app.route('/data/total-hours-per-operator-workstation')
+def total_hours_per_operator_workstation():
+    try:
+        con = connect_db()
+        cur = con.cursor()
+
+        # Consulta para o tempo total por operador e estação de trabalho
+        query = """
+            SELECT o.name AS operator_name, w.name AS workstation_name, 
+                   SUM(EXTRACT(EPOCH FROM (ws.end_time - ws.start_time)) / 3600) AS total_hours
+            FROM public.worksessions ws
+            JOIN public.operators o ON ws.operator_id = o.operator_id
+            JOIN public.workstations w ON ws.workstation_id = w.workstation_id
+            WHERE ws.is_done = true
+            GROUP BY o.name, w.name
+            ORDER BY o.name, w.name;
+        """
+        cur.execute(query)
+        result = dict_fetchall(cur)
+
+        labels = [f"{row['operator_name']} - {row['workstation_name']}" for row in result]  # Operador - Estação de trabalho
+        data = [row['total_hours'] for row in result]  # Horas totais
+
+        cur.close()
+        con.close()
+
+        return jsonify({'labels': labels, 'data': data})
+
+    except Exception as e:
+        print(f"Erro ao executar a consulta: {e}")
+        return jsonify({'error': 'Erro ao processar os dados'}), 500
+
+@app.route('/data/average-session-time-per-operator')
+def average_session_time_per_operator():
+    try:
+        con = connect_db()
+        cur = con.cursor()
+
+        # Consulta para o tempo médio de sessão por operador
+        query = """
+            SELECT o.name, AVG(EXTRACT(EPOCH FROM (ws.end_time - ws.start_time)) / 3600) AS avg_hours
+            FROM public.worksessions ws
+            JOIN public.operators o ON ws.operator_id = o.operator_id
+            WHERE ws.is_done = true
+            GROUP BY o.name;
+        """
+        cur.execute(query)
+        result = dict_fetchall(cur)
+
+        labels = [row['name'] for row in result]  # Nomes dos operadores
+        data = [row['avg_hours'] for row in result]  # Horas médias
+
+        cur.close()
+        con.close()
+
+        return jsonify({'labels': labels, 'data': data})
+
+    except Exception as e:
+        print(f"Erro ao executar a consulta: {e}")
+        return jsonify({'error': 'Erro ao processar os dados'}), 500
+
+@app.route('/data/total-time-per-operator')
+def total_time_per_operator():
+    try:
+        con = connect_db()
+        cur = con.cursor()
+
+        # Consulta para o tempo total gasto por operador
+        query = """
+            SELECT o.name, SUM(EXTRACT(EPOCH FROM (ws.end_time - ws.start_time)) / 3600) AS total_hours
+            FROM public.worksessions ws
+            JOIN public.operators o ON ws.operator_id = o.operator_id
+            WHERE ws.is_done = true
+            GROUP BY o.name;
+        """
+        cur.execute(query)
+        result = dict_fetchall(cur)
+
+        labels = [row['name'] for row in result]  # Nomes dos operadores
+        data = [row['total_hours'] for row in result]  # Horas totais
+
+        cur.close()
+        con.close()
+
+        return jsonify({'labels': labels, 'data': data})
+
+    except Exception as e:
+        print(f"Erro ao executar a consulta: {e}")
+        return jsonify({'error': 'Erro ao processar os dados'}), 500
 
 @app.route('/api/worksessions')
 def worksessions_data():
