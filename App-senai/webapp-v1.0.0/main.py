@@ -5,7 +5,7 @@ import database
 import flask_login
 from datetime import datetime, time, timedelta
 from flask import jsonify, request, redirect, url_for
-import psycopg2
+import psycopg2 
 from datetime import datetime
 
 
@@ -14,15 +14,15 @@ from datetime import datetime
 #Flask configuration
 versao=''
 app = flask.Flask(__name__)
-#app.secret_key = 'key'
-app.secret_key = os.environ['SECRETKEY']
+app.secret_key = 'key'
+#app.secret_key = os.environ['SECRETKEY']
 #Flask-Login configuration
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 #Database configuration
-databaseOBJ=database.postgresDatabase(user=os.environ['DBUSER'], password=os.environ['DBPASSWORD'], host=os.environ['DBHOST'], dbname=os.environ['DBNAME'])
-#databaseOBJ=database.postgresDatabase(host='localhost')
+#databaseOBJ=database.postgresDatabase(user=os.environ['DBUSER'], password=os.environ['DBPASSWORD'], host=os.environ['DBHOST'], dbname=os.environ['DBNAME'])
+databaseOBJ=database.postgresDatabase(host='localhost')
 
 ######################################################## AUTHENTICATION ####################################################
 
