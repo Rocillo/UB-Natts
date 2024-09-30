@@ -711,6 +711,30 @@ def historico():
     operators = fetch_all_operators()
     return flask.render_template('historico.html',  operators=operators, machine_names=machine_names)
 
+@app.route('/tabelahistorico', methods=['GET'])
+@flask_login.login_required
+def tabelahistorico():
+    global databaseOBJ
+    form = flask.request.form
+    args = flask.request.args
+         
+    if flask.request.method == 'GET':
+        dt_inicio = str(args.get('inicial', default='today'))
+        dt_fim = str(args.get('final', default='tomorrow'))
+        return flask.make_response({'all': databaseOBJ.readRaw("select producao.id, maquina.nome, to_char(producao.dt_inicio, 'DD/MM/YY HH24:MI:SS'), \
+                                                                to_char(producao.dt_fim, 'DD/MM/YY HH24:MI:SS'), producao.qtde_coletada,\
+                                                                case when producao.estado=TRUE then 'Rodando' when producao.estado=FALSE then 'Parado' end, \
+                                                                coalesce (temp_refugo_total.total_refugo::int, 0), coalesce (to_char(temp_parada_total.total_parada, 'HH24:MI:SS'),'00:00:00')\
+                                                                from producao inner join maquina on producao.id_maquina=maquina.id \
+                                                                inner join usuarios on producao.id_usuario=usuarios.id \
+                                                                inner join (select producao.id, sum(refugo.quantidade) as total_refugo from producao \
+                                                                FULL OUTER JOIN refugo on refugo.id_producao=producao.id group by producao.id) as temp_refugo_total \
+                                                                on temp_refugo_total.id=producao.id\
+                                                                inner join (select producao.id, sum(parada.tempo) as total_parada from producao \
+                                                                FULL OUTER JOIN parada on parada.id_producao=producao.id group by producao.id) as temp_parada_total \
+                                                                on temp_parada_total.id=producao.id\
+                                                                where producao.dt_inicio >= '"+dt_inicio +"' and producao.dt_inicio <= '"+ dt_fim + "' order by producao.id DESC; ")})
+
 @app.route('/status')
 @flask_login.login_required
 def status():
