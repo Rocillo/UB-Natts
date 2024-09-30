@@ -6,11 +6,14 @@
 
     <div class="row justify-content-center text-black ">
         <div class="col-12 col-lg-4"></div>
-        <div class="col-6 col-lg-4 d-flex align-items-center justify-content-lg-center justify-content-start"><h4>Histórico</h4></div>
+        <div class="col-6 col-lg-4 d-flex align-items-center justify-content-lg-center justify-content-start">
+            <h4>Histórico</h4>
+        </div>
         <div class="col-12 col-lg-4 d-flex align-items-around justify-content-around">
             <label for="recipient-name" class="col-form-label">Selecione o Período:</label>
             <input type="text" name="daterange">
-            <button type="button" class="btn btn-primary btn-sm  mx-1 h-100" id="calendario"><i class="date-icon fa fa-calendar"></i></button>
+            <button type="button" class="btn btn-primary btn-sm  mx-1 h-100" id="calendario"><i
+                    class="date-icon fa fa-calendar"></i></button>
         </div>
     </div>
 
@@ -19,131 +22,143 @@
             <div class="card text-black  o-hidden bg-light border-info text-center h-100">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table text-black table-striped" id="tabela-monitoramento"><thead class="thead-default"></thead>
+                        <table class="table text-black table-striped" id="tabela-monitoramento">
+                            <thead class="thead-default"></thead>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-    </div> 
+    </div>
 </div>
 
 
 <script>
 
 
-var table;
+    var table;
 
-/*Build data table*/
-{
-/*Build data table*/
-jQuery.ajax({
-    url:'/tabelahistorico',
-    type: 'GET',
-    data: {'inicial': 'today', 'final': 'tomorrow'},
-    success:  function(response){
-        /*Table*/
-        table = jQuery('#tabela-monitoramento').DataTable(
-        {
-            language:{"url": "{{ url_for('static', filename='datatable-1.10.22/pt-br.json') }}"},
-            pageLength : 20,
-            bLengthChange: false,
-            bFilter: true,
-            dom: 'Bfrtip',
-            buttons: [
-                    {
-                    extend: 'excelHtml5',
-                    title: 'Historico Producao',
-                    text: 'Exportar para Excel'
-                }
-            ],
-            aaSorting: [[0, 'desc']],
-            data: response['all'],
-            columns: [  {title: "N° registro"}, {title: "Máquina"}, {title: "Data Início"},{title: "Data Fim"}, {title: "Quantidade Produzida"}, {title: "Estado", visible: false}, { title: "Total de Refugo"},
-                            {title: "Total de Paradas"}]});
-
-            /*Users table row handler*/
-            jQuery('#tabela-monitoramento tbody').on('click', 'tr', function () 
-            {
-                var tr = jQuery(this).closest('tr');
-                var row = table.row(tr);
-                /*Check if row is empty*/
-                if (typeof row.data() === 'undefined'){return null;}
-                /*Selected row*/
-                if (jQuery(this).hasClass('tableSelected')){
-                    jQuery(this).removeClass('tableSelected');
-                }
-                else {
-                    table.jQuery('tr.tableSelected').removeClass('tableSelected');
-                    jQuery(this).addClass('tableSelected');
-                }    
-
-            });
-        }
-    });
-
-/*Calendario*/
-
-jQuery('#calendario').on('click', function() {
-    jQuery('input[name="daterange"]').focus();
-});
-jQuery(function() {
-    jQuery('input[name="daterange"]').daterangepicker({
-        opens: 'left',
-        locale: {
-        format: "DD/MM/YYYY",
-        separator: " - ",
-        applyLabel: "Salvar",
-        cancelLabel: "Cancelar",
-        fromLabel: "From",
-        toLabel: "To",
-        customRangeLabel: "Custom",
-        daysOfWeek: [
-            "D",
-            "S",
-            "T",
-            "Q",
-            "Q",
-            "S",
-            "S"
-        ],
-        monthNames: [
-            "Jan",
-            "Fev",
-            "Mar",
-            "Abr",
-            "Mai",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Set",
-            "Out",
-            "Nov",
-            "Dec"
-        ],
-        "firstDay": 1
-    }
-    }, function(start, end, label) {
+    /*Build data table*/
+    {
+        /*Build data table*/
         jQuery.ajax({
-            url:'/tabelahistorico',
+            url: '/tabelahistorico',
             type: 'GET',
-            data: {'inicial': start.format('YYYY-MM-DD'), 'final': end.format('YYYY-MM-DD') },
-            success:  function(response){
-                /*Preparar dados*/
-                var eventData = response;
-                console.log('aqui');
-                console.log(eventData);
-                /*Atualizar a tabela*/
-                table.clear();
-                console.log('apagou');
-                table.rows.add(eventData['all']);
-                table.draw();
-                console.log('desenhou');
+            data: { 'inicial': 'today', 'final': 'tomorrow' },
+            success: function (response) {
+                /*Table*/
+                table = jQuery('#tabela-monitoramento').DataTable(
+                    {
+                        language: { "url": "{{ url_for('static', filename='datatable-1.10.22/pt-br.json') }}" },
+                        pageLength: 20,
+                        bLengthChange: false,
+                        bFilter: true,
+                        dom: 'Bfrtip',
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                title: '',
+                                text: '<i class="fa-solid fa-file-excel"></i> Exportar para Excel',
+                                action: function (e, dt, button, config) {
+                                    var dataAtual = new Date();
+                                    var dataFormatada = dataAtual.toLocaleString().replace(/[^0-9a-zA-Z]/g, '_');
+                                    var novoTitulo = 'Historico_Refugo_' + dataFormatada;
+
+                                    // Atualize o título do arquivo Excel
+                                    config.title = novoTitulo;
+
+                                    // Execute a ação padrão de exportação
+                                    $.fn.dataTable.ext.buttons.excelHtml5.action.call(this, e, dt, button, config);
+                                }
+                            }
+                        ],
+                        aaSorting: [[0, 'desc']],
+                        data: response['all'],
+                        columns: [{ title: "N° registro" }, { title: "Máquina" }, { title: "Data Início" }, { title: "Data Fim" }, { title: "Quantidade Produzida" }, { title: "Estado", visible: false }, { title: "Total de Refugo" },
+                        { title: "Total de Paradas" }]
+                    });
+
+                /*Users table row handler*/
+                jQuery('#tabela-monitoramento tbody').on('click', 'tr', function () {
+                    var tr = jQuery(this).closest('tr');
+                    var row = table.row(tr);
+                    /*Check if row is empty*/
+                    if (typeof row.data() === 'undefined') { return null; }
+                    /*Selected row*/
+                    if (jQuery(this).hasClass('tableSelected')) {
+                        jQuery(this).removeClass('tableSelected');
+                    }
+                    else {
+                        table.jQuery('tr.tableSelected').removeClass('tableSelected');
+                        jQuery(this).addClass('tableSelected');
+                    }
+
+                });
             }
         });
-    });
-});
-}
+
+        /*Calendario*/
+
+        jQuery('#calendario').on('click', function () {
+            jQuery('input[name="daterange"]').focus();
+        });
+        jQuery(function () {
+            jQuery('input[name="daterange"]').daterangepicker({
+                opens: 'left',
+                locale: {
+                    format: "DD/MM/YYYY",
+                    separator: " - ",
+                    applyLabel: "Salvar",
+                    cancelLabel: "Cancelar",
+                    fromLabel: "From",
+                    toLabel: "To",
+                    customRangeLabel: "Custom",
+                    daysOfWeek: [
+                        "D",
+                        "S",
+                        "T",
+                        "Q",
+                        "Q",
+                        "S",
+                        "S"
+                    ],
+                    monthNames: [
+                        "Jan",
+                        "Fev",
+                        "Mar",
+                        "Abr",
+                        "Mai",
+                        "Jun",
+                        "Jul",
+                        "Ago",
+                        "Set",
+                        "Out",
+                        "Nov",
+                        "Dec"
+                    ],
+                    "firstDay": 1
+                }
+            }, function (start, end, label) {
+                jQuery.ajax({
+                    url: '/tabelahistorico',
+                    type: 'GET',
+                    data: { 'inicial': start.format('YYYY-MM-DD'), 'final': end.format('YYYY-MM-DD') },
+                    success: function (response) {
+                        /*Preparar dados*/
+                        var eventData = response;
+                        console.log('aqui');
+                        console.log(eventData);
+                        /*Atualizar a tabela*/
+                        table.clear();
+                        console.log('apagou');
+                        table.rows.add(eventData['all']);
+                        table.draw();
+                        console.log('desenhou');
+                    }
+                });
+            });
+        });
+    }
 
 </script>
 

@@ -707,9 +707,7 @@ def worksessions_data():
 
 @app.route('/historico')
 def historico():
-    machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
-    operators = fetch_all_operators()
-    return flask.render_template('historico.html',  operators=operators, machine_names=machine_names)
+    return flask.render_template('hystoric.html')
 
 @app.route('/tabelahistorico', methods=['GET'])
 @flask_login.login_required
@@ -762,3 +760,47 @@ def manage_operators():
     operators, workstations = fetch_all_operators()
     
     return flask.render_template('manage_operators.html', operators=operators, machine_names=machine_names, workstations=workstations)
+
+# Rota para buscar dados da tabela filtrados por data
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    if not start_date:
+        start_date = None
+    if not end_date:
+        end_date = None
+
+    conn = connect_db()
+    cursor = conn.cursor()
+    
+    query = """
+    SELECT ws.session_id, o.name AS operator_name, w.name AS workstation_name, 
+           ws.start_time, ws.end_time, ws.is_done
+    FROM public.worksessions ws
+    JOIN public.operators o ON o.operator_id = ws.operator_id
+    JOIN public.workstations w ON w.workstation_id = ws.workstation_id
+    WHERE (%s IS NULL OR ws.start_time >= %s) 
+      AND (%s IS NULL OR ws.end_time <= %s)
+    """
+    params = (start_date, start_date, end_date, end_date)
+    cursor.execute(query, params)
+    
+    rows = cursor.fetchall()
+    conn.close()
+
+    data = []
+    for row in rows:
+        # Convertendo o campo is_done para "Finalizado" ou "Em andamento"
+        is_done_text = "Finalizado" if row[5] else "Em andamento"
+        data.append({
+            'session_id': row[0],
+            'operator_name': row[1],
+            'workstation_name': row[2],
+            'start_time': row[3].strftime('%Y-%m-%d %H:%M:%S'),
+            'end_time': row[4].strftime('%Y-%m-%d %H:%M:%S') if row[4] else None,
+            'is_done': is_done_text
+        })
+
+    return jsonify(data)
