@@ -200,15 +200,8 @@ def relatorio():
 
     return flask.render_template('relatorio.html', machine_names= machine_names)
 
-@app.route('/historico')
-@flask_login.login_required
-def historico():
-    machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
-    return flask.render_template('historico.html', machine_names=machine_names)
-
-
 # Database connection parameters
-DB_HOST = '192.168.86.91' # localhost | 192.168.86.91
+DB_HOST = 'localhost' # localhost | localhost
 DB_NAME = 'ub_natts'
 DB_USER = 'postgres'
 DB_PASSWORD = 'postgres'
@@ -712,11 +705,11 @@ def worksessions_data():
     
     return jsonify({'data': data})
 
-@app.route('/hystoric')
-def hystoric():
+@app.route('/historico')
+def historico():
     machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
     operators = fetch_all_operators()
-    return flask.render_template('hystoric.html',  operators=operators, machine_names=machine_names)
+    return flask.render_template('historico.html',  operators=operators, machine_names=machine_names)
 
 @app.route('/status')
 @flask_login.login_required
