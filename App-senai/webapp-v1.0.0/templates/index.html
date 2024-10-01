@@ -1,42 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid h-100">
 
-    <div class="card text-black o-hidden h-100 bg-light border-info">
-        <div class="d-flex card-header align-items-center justify-content-center">
-            <h4 class="">Monitoramento das Workstations</h4>
+<div class="container my-5">
+    <div class="row">
+        {% for workstation in workstations %}
+        <div class="col-md-4 mb-4">
+            <div class="card {{ workstation['border_color'] }} border-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ workstation['name'] }}</h5> <!-- Nome da workstation -->
+                    <p class="card-text">
+                        <strong>Operador:</strong> {{ workstation['operator_name'] }}
+                    </p>
+                    <p class="card-text">
+                        <strong>Início da Sessão:</strong> 
+                        {% if workstation['start_time'] %}
+                            {{ workstation['start_time'].strftime('%d/%m/%Y %H:%M:%S') }}
+                        {% else %}
+                            Sessão não iniciada
+                        {% endif %}
+                    </p>
+                    <p class="card-text">
+                        <strong>Status:</strong> {{ workstation['status'] }}
+                    </p>
+                </div>
+            </div>
         </div>
-        <div class="row" id="workstation-cards">
-            <!-- Workstation cards will be injected here by JavaScript -->
-        </div>
+        {% endfor %}
     </div>
 </div>
-<script>
-    function fetchStatus() {
-        $.getJSON('/status', function (data) {
-            let cardsHtml = '';
-            data.forEach(function (ws) {
-                const cardClass = ws.active ? 'card-active' : 'card-inactive';
-                cardsHtml += `
-                        <div class="col-md-6">
-                            <div class="card ${cardClass} mb-4">
-                                <div class="card-body">
-                                    <h5 class="card-title">${ws.workstation_name}</h5>
-                                    <p class="card-text">Operador: ${ws.operator_name}</p>
-                                    <p class="card-text">Início de Operação: ${ws.start_time}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-            });
-            $('#workstation-cards').html(cardsHtml);
-        });
-    }
 
-    $(document).ready(function () {
-        fetchStatus();
-        setInterval(fetchStatus, 5000);  // Refresh every 5 seconds
-    });
-</script>
 {% endblock %}

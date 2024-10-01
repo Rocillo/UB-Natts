@@ -14,15 +14,14 @@ from datetime import datetime
 #Flask configuration
 versao=''
 app = flask.Flask(__name__)
-#app.secret_key = 'key'
-app.secret_key = os.environ['SECRETKEY']
+app.secret_key = 'key'
+#app.secret_key = os.environ['SECRETKEY']
 #Flask-Login configuration
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
-#Database configuration
-databaseOBJ=database.postgresDatabase(user=os.environ['DBUSER'], password=os.environ['DBPASSWORD'], host=os.environ['DBHOST'], dbname=os.environ['DBNAME'])
-#databaseOBJ=database.postgresDatabase(host='localhost')
+#databaseOBJ=database.postgresDatabase(user=os.environ['DBUSER'], password=os.environ['DBPASSWORD'], host=os.environ['DBHOST'], dbname=os.environ['DBNAME'])
+databaseOBJ=database.postgresDatabase(host='localhost')
 
 ######################################################## AUTHENTICATION ####################################################
 
@@ -743,9 +742,55 @@ def status():
 @app.route('/index')
 @flask_login.login_required
 def index():
-    machine_names = databaseOBJ.readRaw("select id, nome, fabricante, ano from maquina where id>0 and id <9 order by id ASC;")
+    conn = connect_db()
+    cur = conn.cursor()
+    
 
-    return flask.render_template('index.html', machine_names=machine_names)
+    # Query para obter a sessão mais recente de cada workstation
+    cur.execute('''
+        SELECT w.name, ws.is_done, o.name AS operator_name, ws.start_time
+        FROM public.workstations w
+        LEFT JOIN public.worksessions ws ON w.workstation_id = ws.workstation_id
+        LEFT JOIN public.operators o ON ws.operator_id = o.operator_id
+        WHERE ws.start_time IS NOT NULL
+        ORDER BY w.workstation_id, ws.start_time DESC
+    ''')
+
+    # Pegar a sessão mais recente de cada workstation
+    workstations = {}
+    for row in cur.fetchall():
+        workstation_name = row[0]
+        if workstation_name not in workstations:
+            workstations[workstation_name] = row
+
+    workstations_data = []
+    for workstation in workstations.values():
+        # Se is_done for False ou NULL, a cor será verde; caso contrário, vermelha
+        border_color = 'border-success' if workstation[1] is False or workstation[1] is None else 'border-danger'
+        
+        # Se is_done for True, mostrar o status "Aguardando produção" e operador vazio
+        operator_name = workstation[2] if workstation[1] is False or workstation[1] is None else ""
+
+        # Se is_done for True, mostrar "Sessão não iniciada" independentemente do start_time
+        start_time = workstation[3] if workstation[1] is False or workstation[1] is None else None
+
+        # Se is_done for True, o status será "Aguardando produção"
+        status = "Em andamento" if workstation[1] is False or workstation[1] is None else "Aguardando produção"
+
+        workstations_data.append({
+            'name': workstation[0],
+            'is_done': workstation[1],
+            'operator_name': operator_name,
+            'start_time': start_time,
+            'border_color': border_color,
+            'status': status
+        })
+
+    cur.close()
+    conn.close()
+
+    # Renderiza o template HTML e passa os dados processados das workstations
+    return flask.render_template('index.html', workstations=workstations_data)
 
 @app.route('/manage_workstations')
 @flask_login.login_required
