@@ -1,4 +1,5 @@
 FROM python:3.8-alpine
+RUN pip install --upgrade pip
 RUN apk update && apk add libpq
 RUN apk add ca-certificates && update-ca-certificates
 # Change TimeZone

@@ -1,4 +1,5 @@
 FROM python:3.8-slim-buster
+RUN pip install --upgrade pip
 RUN apt update
 RUN apt-get install -y python3-dev build-essential
 RUN apt-get -y install libpq-dev
