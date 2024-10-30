@@ -9,7 +9,7 @@ from datetime import datetime
 
 #databaseOBJ=database.postgresDatabase(host='localhost')
 
-mqttip = "192.168.1.164"
+mqttip = "localhost"
 client = mqtt.Client(clean_session=True)
 #client.username_pw_set("ist","ist")
 client.connect(mqttip, 1883, 60)
@@ -57,197 +57,86 @@ def on_message(client, userdata, msg):
         dtstring = dt.strftime('%Y/%m/%d %H:%M:%S')
         # print(str(ch), ch['events'])
 
-        # Canal 1
-        if "chd1" in str(ch):
+        for canal in range(1, 7):  # De 1 a 6
+            ch_key = f'chd{canal}'
+            workstation_id = canal
 
-            conn = connect_db()
-            status_ch1 = ch['events']['chd1']['edge']
-            timestamp_ch1 = ch['events']['chd1']['timestamp']
-            date_timestamp_ch1 = datetime.fromtimestamp(timestamp_ch1).strftime('%d-%m-%Y %H:%M:%S')
-            print(f"Status Canal 1: {status_ch1}, Timestamp: {timestamp_ch1}, Data: {date_timestamp_ch1}")
-            cursor = conn.cursor()
-            if status_ch1 == 0:  # Quando o canal 1 for ativado
-                print("Canal 1 Ativado")
-                data_atual = dtstring
-                
-                # Seleciona a sessão mais recente com workstation_id = 1 e is_done = 'false'
-                cursor.execute("""
-                    SELECT session_id 
-                    FROM worksessions
-                    WHERE workstation_id = 1 AND is_done = 'false'
-                    ORDER BY start_time DESC  -- Pega a sessão mais recente
-                    LIMIT 1;
-                """)
-                
-                resultado = cursor.fetchone()
-                
-                if resultado:
-                    session_id = resultado[0]
+            if ch_key in str(ch):
+                conn = connect_db()
+                cursor = conn.cursor()
+                status = ch['events'][ch_key]['edge']
+                timestamp = ch['events'][ch_key]['timestamp']
+                date_timestamp = datetime.fromtimestamp(timestamp).strftime('%d-%m-%Y %H:%M:%S')
+                print(f"Status Canal {canal}: {status}, Timestamp: {timestamp}, Data: {date_timestamp}")
+
+                if status == 0:  # Quando o canal for ativado
+                    print(f"Canal {canal} Ativado")
+                    data_atual = dtstring
+
+                    # Seleciona a sessão mais recente para a workstation correspondente com is_done = 'false'
+                    cursor.execute(f"""
+                        SELECT session_id 
+                        FROM worksessions
+                        WHERE workstation_id = %s AND is_done = 'false'
+                        ORDER BY start_time DESC
+                        LIMIT 1;
+                    """, (workstation_id,))
                     
-                    # Atualiza o campo start_time da sessão mais recente
-                    cursor.execute("""
-                        UPDATE worksessions
-                        SET start_time = %s
-                        WHERE session_id = %s;
-                    """, (data_atual, session_id))
-                    
-                    conn.commit()  # Confirma a transação
-                    print("start_time atualizado com sucesso para a sessão mais recente.")
-                else:
-                    print("Nenhuma sessão encontrada para workstation_id = 1 com is_done = 'false'.")
-            
-            # Quando o cartão for retirado (ch1 == 1)
-            elif status_ch1 == 1:  
-                print("Cartão retirado do posto de trabalho")
-                data_atual = dtstring
+                    resultado = cursor.fetchone()
 
-                # Seleciona a sessão mais recente com workstation_id = 1, is_done = 'false', e start_time já definido
-                cursor.execute("""
-                    SELECT session_id, start_time 
-                    FROM worksessions
-                    WHERE workstation_id = 1 AND is_done = 'false' AND start_time IS NOT NULL
-                    ORDER BY start_time DESC
-                    LIMIT 1;
-                """)
-                
-                resultado = cursor.fetchone()
-                
-                if resultado:
-                    session_id = resultado[0]
-                    start_time = resultado[1]
+                    if resultado:
+                        session_id = resultado[0]
 
-                    if start_time:  # Verifica se o start_time está definido
-                        # Atualiza o campo end_time e is_done da sessão mais recente
+                        # Atualiza o campo start_time da sessão mais recente
                         cursor.execute("""
                             UPDATE worksessions
-                            SET end_time = %s, is_done = 'true'
+                            SET start_time = %s
                             WHERE session_id = %s;
                         """, (data_atual, session_id))
-                        
+
                         conn.commit()
-                        print("end_time atualizado e sessão marcada como finalizada.")
+                        print(f"start_time atualizado com sucesso para a sessão mais recente da workstation {workstation_id}.")
                     else:
-                        print("Sessão encontrada, mas start_time não está definido.")
-                else:
-                    print("Nenhuma sessão válida encontrada para workstation_id = 1 com is_done = 'false' e start_time definido.")
+                        print(f"Nenhuma sessão encontrada para workstation_id = {workstation_id} com is_done = 'false'.")
 
-                
-                    
-                    
+                elif status == 1:  # Quando o cartão for retirado
+                    print(f"Cartão retirado do posto de trabalho no Canal {canal}")
+                    data_atual = dtstring
 
-        # Canal 2
-        if "chd2" in str(ch):
+                    # Seleciona a sessão mais recente com is_done = 'false' e start_time já definido
+                    cursor.execute(f"""
+                        SELECT session_id, start_time 
+                        FROM worksessions
+                        WHERE workstation_id = %s AND is_done = 'false' AND start_time IS NOT NULL
+                        ORDER BY start_time DESC
+                        LIMIT 1;
+                    """, (workstation_id,))
 
-            conn = connect_db()
-            status_ch2 = ch['events']['chd2']['edge']
-            timestamp_ch2 = ch['events']['chd2']['timestamp']
-            date_timestamp_ch2 = datetime.fromtimestamp(timestamp_ch2).strftime('%d-%m-%Y %H:%M:%S')
-            print(f"Status Canal 2: {status_ch1}, Timestamp: {timestamp_ch2}, Data: {date_timestamp_ch2}")
-            cursor = conn.cursor()
-            if status_ch2 == 0:  # Quando o canal 1 for ativado
-                print("Canal 2 Ativado")
-                data_atual = dtstring
-                
-                # Seleciona a sessão mais recente com workstation_id = 1 e is_done = 'false'
-                cursor.execute("""
-                    SELECT session_id 
-                    FROM worksessions
-                    WHERE workstation_id = 2 AND is_done = 'false'
-                    ORDER BY start_time DESC  -- Pega a sessão mais recente
-                    LIMIT 1;
-                """)
-                
-                resultado = cursor.fetchone()
-                
-                if resultado:
-                    session_id = resultado[0]
-                    
-                    # Atualiza o campo start_time da sessão mais recente
-                    cursor.execute("""
-                        UPDATE worksessions
-                        SET start_time = %s
-                        WHERE session_id = %s;
-                    """, (data_atual, session_id))
-                    
-                    conn.commit()  # Confirma a transação
-                    print("start_time atualizado com sucesso para a sessão mais recente.")
-                else:
-                    print("Nenhuma sessão encontrada para workstation_id = 2 com is_done = 'false'.")
-            
-            # Quando o cartão for retirado (ch1 == 1)
-            elif status_ch2 == 1:  
-                print("Cartão retirado do posto de trabalho")
-                data_atual = dtstring
+                    resultado = cursor.fetchone()
 
-                # Seleciona a sessão mais recente com workstation_id = 1, is_done = 'false', e start_time já definido
-                cursor.execute("""
-                    SELECT session_id, start_time 
-                    FROM worksessions
-                    WHERE workstation_id = 2 AND is_done = 'false' AND start_time IS NOT NULL
-                    ORDER BY start_time DESC
-                    LIMIT 1;
-                """)
-                
-                resultado = cursor.fetchone()
-                
-                if resultado:
-                    session_id = resultado[0]
-                    start_time = resultado[1]
+                    if resultado:
+                        session_id = resultado[0]
+                        start_time = resultado[1]
 
-                    if start_time:  # Verifica se o start_time está definido
-                        # Atualiza o campo end_time e is_done da sessão mais recente
-                        cursor.execute("""
-                            UPDATE worksessions
-                            SET end_time = %s, is_done = 'true'
-                            WHERE session_id = %s;
-                        """, (data_atual, session_id))
-                        
-                        conn.commit()
-                        print("end_time atualizado e sessão marcada como finalizada.")
+                        if start_time:
+                            # Atualiza o campo end_time e is_done da sessão mais recente
+                            cursor.execute("""
+                                UPDATE worksessions
+                                SET end_time = %s, is_done = 'true'
+                                WHERE session_id = %s;
+                            """, (data_atual, session_id))
+
+                            conn.commit()
+                            print(f"end_time atualizado e sessão marcada como finalizada para workstation {workstation_id}.")
+                        else:
+                            print(f"Sessão encontrada para workstation {workstation_id}, mas start_time não está definido.")
                     else:
-                        print("Sessão encontrada, mas start_time não está definido.")
-                else:
-                    print("Nenhuma sessão válida encontrada para workstation_id = 2 com is_done = 'false' e start_time definido.")
+                        print(f"Nenhuma sessão válida encontrada para workstation_id = {workstation_id} com is_done = 'false' e start_time definido.")
 
-        # Canal 3
-        if "chd3" in str(ch):
-            status_ch3 = ch['events']['chd3']['edge']
-            timestamp_ch3 = ch['events']['chd3']['timestamp']
-            date_timestamp_ch3 = datetime.utcfromtimestamp(timestamp_ch3).strftime('%d-%m-%Y %H:%M:%S')
-            print(f"Status Canal 3: {status_ch3}, Timestamp: {timestamp_ch3}, Data: {date_timestamp_ch3}")
-            if status_ch3 == 0:
-                print("Canal 3 Ativado")
+                cursor.close()
+                conn.close()
 
-        # Canal 4
-        if "chd4" in str(ch):
-            status_ch4 = ch['events']['chd4']['edge']
-            timestamp_ch4 = ch['events']['chd4']['timestamp']
-            date_timestamp_ch4 = datetime.utcfromtimestamp(timestamp_ch4).strftime('%d-%m-%Y %H:%M:%S')
-            print(f"Status Canal 4: {status_ch4}, Timestamp: {timestamp_ch4}, Data: {date_timestamp_ch4}")
-            if status_ch4 == 0:
-                print("Canal 4 Ativado")
-
-        # Canal 5
-        if "chd5" in str(ch):
-            status_ch5 = ch['events']['chd5']['edge']
-            timestamp_ch5 = ch['events']['chd5']['timestamp']
-            date_timestamp_ch5 = datetime.utcfromtimestamp(timestamp_ch5).strftime('%d-%m-%Y %H:%M:%S')
-            print(f"Status Canal 5: {status_ch5}, Timestamp: {timestamp_ch5}, Data: {date_timestamp_ch5}")
-            if status_ch5 == 0:
-                print("Canal 5 Ativado")
-
-        # Canal 6
-        if "chd6" in str(ch):
-            status_ch6 = ch['events']['chd6']['edge']
-            timestamp_ch6 = ch['events']['chd6']['timestamp']
-            date_timestamp_ch6 = datetime.utcfromtimestamp(timestamp_ch6).strftime('%d-%m-%Y %H:%M:%S')
-            print(f"Status Canal 6: {status_ch6}, Timestamp: {timestamp_ch6}, Data: {date_timestamp_ch6}")
-            if status_ch6 == 0:
-                print("Canal 6 Ativado")
-    
-
-#Inicialização da Aplicação - LOOP FOREVER
-   
+#Inicialização da Aplicação - LOOP FOREVER 
 client.on_connect = on_connect
 client.on_message = on_message
 client.loop_forever()
