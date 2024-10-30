@@ -9,7 +9,7 @@ from datetime import datetime
 
 #databaseOBJ=database.postgresDatabase(host='localhost')
 
-mqttip = "192.168.1.164"
+mqttip = "192.168.1.158"
 client = mqtt.Client(clean_session=True)
 #client.username_pw_set("ist","ist")
 client.connect(mqttip, 1883, 60)
@@ -30,7 +30,7 @@ contagem_maq6=0
 def connect_db():
     try:
         conn = psycopg2.connect(
-            host='localhost',
+            host='192.168.1.158',
             database='ub_natts',
             user='postgres',
             password='postgres'
@@ -129,11 +129,7 @@ def on_message(client, userdata, msg):
                     else:
                         print("Sessão encontrada, mas start_time não está definido.")
                 else:
-                    print("Nenhuma sessão válida encontrada para workstation_id = 1 com is_done = 'false' e start_time definido.")
-
-                
-                    
-                    
+                    print("Nenhuma sessão válida encontrada para workstation_id = 1 com is_done = 'false' e start_time definido.")                    
 
         # Canal 2
         if "chd2" in str(ch):
@@ -142,7 +138,7 @@ def on_message(client, userdata, msg):
             status_ch2 = ch['events']['chd2']['edge']
             timestamp_ch2 = ch['events']['chd2']['timestamp']
             date_timestamp_ch2 = datetime.fromtimestamp(timestamp_ch2).strftime('%d-%m-%Y %H:%M:%S')
-            print(f"Status Canal 2: {status_ch1}, Timestamp: {timestamp_ch2}, Data: {date_timestamp_ch2}")
+            print(f"Status Canal 2: {status_ch2}, Timestamp: {timestamp_ch2}, Data: {date_timestamp_ch2}")
             cursor = conn.cursor()
             if status_ch2 == 0:  # Quando o canal 1 for ativado
                 print("Canal 2 Ativado")
