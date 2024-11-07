@@ -6,9 +6,9 @@
     <div class="row">
         {% for workstation in workstations %}
         <div class="col-md-4 mb-4">
-            <div class="card {{ workstation['border_color'] }} border-3">
+            <div class="card {{ workstation['border_color'] }} mb-3" style="font-size: large;">
                 <div class="card-body">
-                    <h5 class="card-title">{{ workstation['name'] }}</h5> <!-- Nome da workstation -->
+                    <h5 class="card-title text-white text-center"><strong>{{ workstation['name'] }}</strong></h5> <!-- Nome da workstation -->
                     <p class="card-text">
                         <strong>Operador:</strong> {{ workstation['operator_name'] }}
                     </p>

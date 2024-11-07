@@ -766,8 +766,8 @@ def index():
     workstations_data = []
     for workstation in workstations.values():
         # Se is_done for False ou NULL, a cor será verde; caso contrário, vermelha
-        border_color = 'border-success' if workstation[1] is False or workstation[1] is None else 'border-danger'
-        
+        border_color = 'bg-success' if workstation[1] is False or workstation[1] is None else 'bg-danger'
+    
         # Se is_done for True, mostrar o status "Aguardando produção" e operador vazio
         operator_name = workstation[2] if workstation[1] is False or workstation[1] is None else ""
 
@@ -822,7 +822,7 @@ def get_data():
     
     query = """
     SELECT ws.session_id, o.name AS operator_name, w.name AS workstation_name, 
-           ws.start_time, ws.end_time, ws.is_done
+           ws.start_time, ws.end_time, ws.is_done, ws.duration_interval
     FROM public.worksessions ws
     JOIN public.operators o ON o.operator_id = ws.operator_id
     JOIN public.workstations w ON w.workstation_id = ws.workstation_id
@@ -837,15 +837,26 @@ def get_data():
 
     data = []
     for row in rows:
-        # Convertendo o campo is_done para "Finalizado" ou "Em andamento"
+        
+        # Format duration as HH:MM:ss
+        if row[6]:  # If duration_interval is not NULL
+            total_seconds = int(row[6].total_seconds())
+            hours, remainder = divmod(total_seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            duration_text = f"{hours:02}:{minutes:02}:{seconds:02}"
+        else:
+            duration_text = "-"
+            
         is_done_text = "Finalizado" if row[5] else "Em andamento"
+
         data.append({
             'session_id': row[0],
             'operator_name': row[1],
             'workstation_name': row[2],
             'start_time': row[3].strftime('%Y-%m-%d %H:%M:%S'),
             'end_time': row[4].strftime('%Y-%m-%d %H:%M:%S') if row[4] else None,
-            'is_done': is_done_text
+            'is_done': is_done_text,
+            'duration': duration_text
         })
 
     return jsonify(data)

@@ -24,6 +24,7 @@
                 <th>Estações de Trabalho</th>
                 <th>Início do Trabalho</th>
                 <th>Final do Trabalho</th>
+                <th>Duração</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -48,6 +49,7 @@
                 { data: 'workstation_name' },
                 { data: 'start_time' },
                 { data: 'end_time' },
+                { data: 'duration' },  // Add this new column to display duration
                 {
                     data: 'is_done',
                     render: function (data, type, row) {
@@ -57,7 +59,8 @@
                             return '<span class="badge badge-warning">' + data + '</span>';
                         }
                     }
-                }
+                },
+                
             ],
             dom: 'Bfrtip',
             buttons: [
@@ -66,7 +69,6 @@
                     title: 'Historico Producao',
                     text: 'Exportar para Excel'
                 }
-
             ]
         });
 
@@ -74,4 +76,5 @@
             table.ajax.reload();
         });
     });
-</script>{% endblock %}
+</script>
+{% endblock %}
