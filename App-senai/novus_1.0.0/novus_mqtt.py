@@ -90,9 +90,9 @@ def on_message(client, userdata, msg):
                         # Atualiza o campo start_time da sessão mais recente
                         cursor.execute("""
                             UPDATE worksessions
-                            SET start_time = %s
+                            SET start_time = %s, workstation_id = %s
                             WHERE session_id = %s;
-                        """, (data_atual, session_id))
+                        """, (data_atual, workstation_id, session_id))
 
                         conn.commit()
                         print(f"start_time atualizado com sucesso para a sessão mais recente da workstation {workstation_id}.")
