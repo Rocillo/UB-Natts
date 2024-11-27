@@ -9,7 +9,7 @@ from datetime import datetime
 
 #databaseOBJ=database.postgresDatabase(host='localhost')
 
-mqttip = "localhost"
+mqttip = "192.168.1.158"
 client = mqtt.Client(clean_session=True)
 #client.username_pw_set("ist","ist")
 client.connect(mqttip, 1883, 60)
@@ -30,7 +30,7 @@ contagem_maq6=0
 def connect_db():
     try:
         conn = psycopg2.connect(
-            host='localhost',
+            host='192.168.1.158',
             database='ub_natts',
             user='postgres',
             password='postgres'
